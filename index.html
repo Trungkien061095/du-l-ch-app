@@ -209,6 +209,9 @@ section>p.lead{margin:6px 0 18px;color:var(--muted);max-width:68ch}
   </section>
 
   <section id="s-plan">
+    <h2>Lịch trình & Tổng chi phí</h2>
+    <p class="lead">Chọn "Thêm vào lịch" ở các thẻ phía trên, từng mục sẽ vào đúng ngày kèm bảng tổng kết chi phí dự kiến cho chuyến đi.</p>
+    <div id="cost-summary" class="panel" style="margin-bottom:16px;border-color:var(--accent)"></div>
     <h2>Lịch trình</h2>
     <p class="lead">Chọn "Thêm vào lịch" ở các thẻ phía trên, từng mục sẽ vào đúng ngày.</p>
     <div class="plan" id="plan"></div>
@@ -879,6 +882,25 @@ function buildSmartGuide(O, Dd){
 }
 
 const LOCAL_BUS_INFO = {
+  'qn-hue': [
+    {name: 'Nhà xe Hoàng Long (Bắc - Nam)', phone: '0225 3920 920', desc: 'Xe giường nằm chạy tuyến cố định Quảng Ninh ⇄ Huế'},
+    {name: 'Nhà xe Xuân Truyền / Đức Lộc', phone: '1900 888684', desc: 'Xe giường nằm tuyến Quảng Ninh – Hải Phòng – Huế'},
+    {name: 'Phúc Xuyên Limousine (Chặng QN → Hà Nội)', phone: '1900 6799', desc: 'Đi Limousine lên bến xe Nước Ngầm/Giáp Bát rồi nối tuyến Hưng Thành, Camel Travel (1900 636 212) đi Huế'}
+  ],
+  'hue-qn': [
+    {name: 'Nhà xe Hoàng Long (Bắc - Nam)', phone: '0225 3920 920', desc: 'Xe giường nằm chạy tuyến cố định Huế ⇄ Quảng Ninh'},
+    {name: 'Hưng Thành / Camel Travel + Phúc Xuyên', phone: '1900 636 212', desc: 'Đi giường nằm Huế → Hà Nội, sau đó nối Limousine Phúc Xuyên (1900 6799) về Quảng Ninh'}
+  ],
+  'hn-hue': [
+    {name: 'Hưng Thành Limousine / Giường nằm', phone: '1900 636 212', desc: 'Cabin đôi / Giường nằm VIP chuyên tuyến Hà Nội ⇄ Huế'},
+    {name: 'Camel Travel', phone: '024 3625 0736', desc: 'Xe giường nằm chuyên tuyến Hà Nội ⇄ Huế'},
+    {name: 'Queen Cafe Open Bus', phone: '024 3903 6036', desc: 'Xe giường nằm / Cabin đôi Hà Nội ⇄ Huế'}
+  ],
+  'hue-hn': [
+    {name: 'Hưng Thành Limousine / Giường nằm', phone: '1900 636 212', desc: 'Cabin đôi / Giường nằm VIP chuyên tuyến Huế ⇄ Hà Nội'},
+    {name: 'Camel Travel', phone: '024 3625 0736', desc: 'Xe giường nằm chuyên tuyến Huế ⇄ Hà Nội'},
+    {name: 'Queen Cafe Open Bus', phone: '024 3903 6036', desc: 'Xe giường nằm / Cabin đôi Huế ⇄ Hà Nội'}
+  ],
   'qn-hp': [
     {name: 'Sơn Hải Limousine', phone: '1900 299951', desc: 'Chạy liên tục 1h/chuyến Quảng Ninh ⇄ Hải Phòng'},
     {name: 'Duy Khánh Limousine', phone: '1900 888684', desc: 'Xe VIP đưa đón tận nơi QN ⇄ Hải Phòng'}
@@ -888,16 +910,16 @@ const LOCAL_BUS_INFO = {
     {name: 'Duy Khánh Limousine', phone: '1900 888684', desc: 'Xe VIP đưa đón tận nơi Hải Phòng ⇄ QN'}
   ],
   'qn-sp': [
-    {name: 'Nhà xe Cường Lan', phone: '02033662662', desc: 'Giường nằm / Cabin VIP chạy thẳng QN ⇄ Sa Pa'},
+    {name: 'Nhà xe Cường Lan', phone: '0203 3662 662', desc: 'Giường nằm / Cabin VIP chạy thẳng QN ⇄ Sa Pa'},
     {name: 'Nhà xe Phúc Xuyên', phone: '1900 6799', desc: 'Giường nằm chất lượng cao tuyến QN ⇄ Sa Pa'}
   ],
   'qn-hn': [
     {name: 'Phúc Xuyên Limousine', phone: '1900 6799', desc: 'Limousine cao tốc đón tận nơi QN ⇄ Hà Nội / Nội Bài'},
-    {name: 'Hạ Long Travel', phone: '02033828288', desc: 'Xe VIP tuyến Hạ Long ⇄ Hà Nội / Nội Bài'}
+    {name: 'Hạ Long Travel', phone: '0203 3828 288', desc: 'Xe VIP tuyến Hạ Long ⇄ Hà Nội / Nội Bài'}
   ],
   'hn-qn': [
     {name: 'Phúc Xuyên Limousine', phone: '1900 6799', desc: 'Limousine cao tốc đón tận nơi Hà Nội / Nội Bài ⇄ QN'},
-    {name: 'Hạ Long Travel', phone: '02033828288', desc: 'Xe VIP tuyến Hà Nội ⇄ Hạ Long'}
+    {name: 'Hạ Long Travel', phone: '0203 3828 288', desc: 'Xe VIP tuyến Hà Nội ⇄ Hạ Long'}
   ],
   'hn-sp': [
     {name: 'Sao Việt', phone: '1900 6746', desc: 'Xe Cabin VIP / Giường nằm chạy liên tục Hà Nội ⇄ Sa Pa'},
@@ -957,12 +979,47 @@ const LOCAL_BUS_INFO = {
   ]
 };
 
+const GENERAL_BUS_OPERATORS = {
+  'Miền Bắc': [
+    {name: 'Phúc Xuyên Limousine', phone: '1900 6799', desc: 'Mạng lưới Limousine & Giường nằm lớn tại Quảng Ninh, Hải Phòng, Hà Nội, Sa Pa'},
+    {name: 'Sao Việt / Inter Bus Lines', phone: '1900 6746', desc: 'Xe Cabin VIP / Giường nằm tuyến Hà Nội – Lào Cai – Sa Pa'},
+    {name: 'Bằng Phấn / Tràng An Limousine', phone: '1900 9389', desc: 'Chuyên tuyến Hà Giang, Ninh Bình, các tỉnh Đông - Tây Bắc'}
+  ],
+  'Miền Trung': [
+    {name: 'Phương Trang (FUTA Bus Lines)', phone: '1900 6067', desc: 'Hãng xe khách lớn nhất miền Trung – Tây Nguyên – miền Nam'},
+    {name: 'Hưng Thành / Camel Travel', phone: '1900 636 212', desc: 'Xe giường nằm / Cabin đôi chuyên tuyến Hà Nội – Huế – Đà Nẵng – Hội An'},
+    {name: 'HAV Limousine / Khanh Phong', phone: '1900 6763', desc: 'Xe Limousine VIP trung chuyển Huế – Đà Nẵng – Nha Trang – Đà Lạt'}
+  ],
+  'Miền Nam': [
+    {name: 'Phương Trang (FUTA Bus Lines)', phone: '1900 6067', desc: 'Mạng lưới xe giường nằm & trung chuyển khắp Sài Gòn, Miền Tây, Đà Lạt, Vũng Tàu'},
+    {name: 'Hoa Mai / Toàn Thắng Limousine', phone: '1900 633 971', desc: 'Limousine VIP chuyên tuyến Sài Gòn – Vũng Tàu – Hồ Tràm'},
+    {name: 'Vũ Linh / Kumho Samco', phone: '1900 8181', desc: 'Xe Limousine & Giường nằm tuyến TP.HCM – Cần Thơ – Phú Quốc (Hà Tiên/Rạch Giá)'}
+  ],
+  'Bắc-Nam': [
+    {name: 'Hoàng Long (Xe khách Bắc - Nam)', phone: '0225 3920 920', desc: 'Tuyến cố định Bắc - Nam qua Quảng Ninh, Hải Phòng, Hà Nội, Huế, Đà Nẵng, TP.HCM'},
+    {name: 'Phương Trang (FUTA Bus Lines)', phone: '1900 6067', desc: 'Hệ thống xe giường nằm liên tỉnh lớn nhất cả nước, hỗ trợ trung chuyển tận nơi'},
+    {name: 'Hưng Thành / Tân Kim Chi', phone: '1900 636 212', desc: 'Xe giường nằm & Cabin phòng đôi VIP chạy tuyến đường dài Bắc – Trung – Nam'}
+  ]
+};
+
 function getBusBoxHTML(O, Dd){
-  const pairKey = S.o + '-' + Dd.key;
-  const buses = LOCAL_BUS_INFO[pairKey];
-  if(!buses || !buses.length) return '';
+  const pairKey = O.key + '-' + Dd.key;
+  let buses = LOCAL_BUS_INFO[pairKey];
+  let title = `Hãng xe khách / Limousine uy tín tuyến ${esc(O.name)} → ${esc(Dd.name)}:`;
+
+  if(!buses || !buses.length){
+    if(O.reg && Dd.reg && O.reg !== Dd.reg){
+      buses = GENERAL_BUS_OPERATORS['Bắc-Nam'];
+      title = `Các hãng xe khách đường dài / Limousine gợi ý cho tuyến ${esc(O.name)} → ${esc(Dd.name)}:`;
+    } else {
+      const reg = Dd.reg || O.reg || 'Miền Trung';
+      buses = GENERAL_BUS_OPERATORS[reg] || GENERAL_BUS_OPERATORS['Bắc-Nam'];
+      title = `Các hãng xe khách / Limousine phổ biến khu vực ${esc(reg)} (${esc(O.name)} → ${esc(Dd.name)}):`;
+    }
+  }
+
   return `<div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:6px">
-    <b style="font-size:14.5px;color:var(--accent)">Hãng xe khách / Limousine uy tín tuyến ${esc(O.name)} → ${esc(Dd.name)}:</b>
+    <b style="font-size:14.5px;color:var(--accent)">${title}</b>
     <div style="display:grid;gap:5px">
       ${buses.map(b => `<div style="font-size:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;padding-top:4px;border-top:1px dashed var(--line)">
         <span>• <b>${esc(b.name)}</b> <span class="note">(${esc(b.desc)})</span></span>
@@ -1203,14 +1260,88 @@ function drawHotel(){
 function drawPlan(){
   const days=dayList(),O=getOrigin(),Dd=D();
   const all=dItems();
+  
+  // Calculate costs
+  let totalMin = 0;
+  let totalMax = 0;
+  let costItemsList = [];
+  
+  const numPeople = S.ad + S.kids.length;
+  
+  // Helper to extract numbers from price strings like "40.000–60.000đ" or "1.200.000đ - 2.500.000đ/đêm"
+  function parsePriceRange(str) {
+    if(!str) return {min: 0, max: 0, text: 'chưa có'};
+    if(str.includes('Miễn phí')) return {min: 0, max: 0, text: 'Miễn phí'};
+    const nums = str.match(/[\d\.]+/g);
+    if(!nums) return {min: 0, max: 0, text: str};
+    let cleanNums = nums.map(n => parseInt(n.replace(/\./g, '')) * (n.length < 5 && parseInt(n) < 1000 ? 1000 : 1)); // handle shorthand if any
+    // Actually standard vn prices are like 40.000 -> 40000
+    // Let's do a safer parser:
+    const matches = str.match(/([\d\.,]+)\s*(?:đ|vnd|VNĐ)?/g);
+    // Let's parse all numbers in the string
+    const allNums = [];
+    const rx = /(\d{1,3}(?:\.\d{3})+|\d+)/g;
+    let match;
+    while ((match = rx.exec(str)) !== null) {
+      let val = parseInt(match[1].replace(/\./g, ''));
+      if(val < 500 && val > 0) val *= 1000; // e.g. 200k -> 200000 if represented as 200
+      allNums.push(val);
+    }
+    if(allNums.length === 0) return {min: 0, max: 0, text: str};
+    const min = Math.min(...allNums);
+    const max = Math.max(...allNums);
+    return {min, max, text: str};
+  }
+
+  // Iterate over selected items
+  Object.entries(S.sel).forEach(([id,v]) => {
+    const item = all.find(x => x.id === id);
+    if(item) {
+      const priceStr = item.cost || item.price || '';
+      const parsed = parsePriceRange(priceStr);
+      costItemsList.push({name: item.n, text: parsed.text || 'chưa có', min: parsed.min, max: parsed.max});
+      totalMin += parsed.min;
+      totalMax += parsed.max;
+    }
+  });
+
+  // Render plan columns
   $('plan').innerHTML=days.map((d,i)=>{
     const items=Object.entries(S.sel).filter(([id,v])=>Math.min(v,days.length-1)===i).map(([id])=>all.find(x=>x.id===id)).filter(Boolean);
     let h=`<div class="pcol"><h3>${dm(d)}</h3>`;
-    if(i===0)h+=`<div class="pitem fixed">Di chuyển ${esc(O.name)} → ${esc(Dd.name)}</div>`;
+    if(i===0)h+=`<div class="pitem fixed">Di chuyển ${esc(O.name)} → ${esc(Dd.name)} <span class="note" style="font-size:11px;display:block">(chưa tính vé máy bay)</span></div>`;
     h+=items.length?items.map(x=>`<div class="pitem"><span>${x.n}</span><button data-rm="${x.id}" type="button" aria-label="Bỏ ${esc(x.n)}">Bỏ</button></div>`).join(''):`<div class="empty">Chưa có mục nào.</div>`;
-    if(i===days.length-1&&S.rt&&days.length>1)h+=`<div class="pitem fixed">Di chuyển ${esc(Dd.name)} → ${esc(O.name)}</div>`;
+    if(i===days.length-1&&S.rt&&days.length>1)h+=`<div class="pitem fixed">Di chuyển ${esc(Dd.name)} → ${esc(O.name)} <span class="note" style="font-size:11px;display:block">(chưa tính vé máy bay)</span></div>`;
     return h+`</div>`;
   }).join('');
+
+  // Render cost summary box
+  let costHtml = `<h3 style="font-size:18px;color:var(--accent);margin-bottom:8px">Tổng chi phí dự kiến cho chuyến đi (${numPeople} người)</h3>`;
+  costHtml += `<div style="font-size:14px;display:grid;gap:6px">`;
+  if(costItemsList.length === 0) {
+    costHtml += `<div class="note">Bạn chưa chọn địa điểm, món ăn hay khách sạn nào vào lịch trình. Hãy bấm "Thêm vào lịch" ở các thẻ phía trên để tổng hợp chi phí.</div>`;
+  } else {
+    costHtml += `<div style="display:grid;gap:4px">`;
+    costItemsList.forEach(ci => {
+      costHtml += `<div style="display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--line);padding-bottom:3px">
+        <span>• ${esc(ci.name)}</span>
+        <span style="font-weight:600;color:var(--ink)">${esc(ci.text)}</span>
+      </div>`;
+    });
+    costHtml += `</div>`;
+    if(totalMin > 0 || totalMax > 0) {
+      const fmt = n => n.toLocaleString('vi-VN') + 'đ';
+      costHtml += `<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);display:flex;justify-content:space-between;font-weight:700;font-size:15.5px;color:var(--accent)">
+        <span>Ước tính các mục đã chọn:</span>
+        <span>${totalMin === totalMax ? fmt(totalMin) : fmt(totalMin) + ' - ' + fmt(totalMax)}</span>
+      </div>`;
+    }
+  }
+  costHtml += `<div style="margin-top:6px;padding:8px;background:var(--bg);border-radius:8px;font-size:13.5px;color:var(--muted)">
+    ⚠️ <b>Lưu ý chi phí:</b> Các khoản vé máy bay (Flight), tàu hỏa hoặc xe khách dài tuyến chưa thể tự động lấy giá chính xác qua API nên <b>chưa tính vé máy bay</b> trong tổng chi phí trên. Các mục dịch vụ chưa có giá cụ thể được ghi rõ là <b>chưa có</b>. Bạn vui lòng tra cứu trực tiếp tại tab Di chuyển.
+  </div>`;
+  costHtml += `</div>`;
+  $('cost-summary').innerHTML = costHtml;
 }
 
 function drawAll(){
