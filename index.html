@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Check in du lịch Việt Nam</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Layout: một cột, form ở đầu trang, thanh điều hướng dính, các mục xếp dọc */
+:root{
+  --bg:#F5F3F9; --surface:#FFFFFF; --ink:#1D1730; --muted:#675F7D; --line:#DFD9EA;
+  --accent:#5A3796; --accent-ink:#FFFFFF; --accent-soft:#EDE6F8;
+  --good:#1D7448; --warn:#9A5F0F; --bad:#AE3029;
+  --f-display:'Bricolage Grotesque','Be Vietnam Pro',system-ui,sans-serif;
+  --f-body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141120; --surface:#1D192D; --ink:#EEEAF8; --muted:#A39CB9; --line:#352F4C;
+  --accent:#B89DF2; --accent-ink:#1A1230; --accent-soft:#2B2346;
+  --good:#5CC38A; --warn:#E0A84F; --bad:#EF8179; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141120; --surface:#1D192D; --ink:#EEEAF8; --muted:#A39CB9; --line:#352F4C;
+  --accent:#B89DF2; --accent-ink:#1A1230; --accent-soft:#2B2346;
+  --good:#5CC38A; --warn:#E0A84F; --bad:#EF8179; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 72px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;line-height:1.12}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.dest{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:6px 0 20px}
+.dest .lbl{font-family:var(--f-display);font-size:clamp(22px,4vw,30px);font-weight:600;color:var(--muted)}
+.dest h1{font-size:clamp(56px,13vw,112px);font-weight:800;letter-spacing:-.02em;color:var(--accent)}
+.form{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+label.f{display:grid;gap:5px;font-size:12.5px;color:var(--muted);font-weight:600;min-width:0}
+input,select{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;min-width:0;width:100%}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink);padding-top:22px}
+.check input{width:auto}
+.kids{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.kids .add{display:flex;gap:6px;align-items:center}
+.kids .add input{width:72px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:600;border:0;font-family:inherit}
+button{font:inherit;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 13px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.small{padding:6px 10px;font-size:13px}
+.note{font-size:13px;color:var(--muted)}
+.err{color:var(--bad);font-size:13px;font-weight:600}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin:22px 0 0;display:flex;gap:6px;overflow-x:auto;padding:8px 0}
+nav.tabs button{flex:none;border:0;background:transparent;color:var(--muted);padding:8px 14px;border-radius:999px;font-weight:600;font-size:14px}
+nav.tabs button.on{background:var(--accent-soft);color:var(--accent)}
+section{padding-top:36px}
+section>h2{font-size:clamp(26px,4vw,34px);font-weight:800}
+section>p.lead{margin:6px 0 18px;color:var(--muted);max-width:68ch}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:16px;background:var(--surface);flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:8px 16px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:12px}
+.leg{display:grid;gap:8px}
+.leg h3{font-size:18px}
+.frow{display:grid;grid-template-columns:minmax(120px,1.1fr) minmax(0,2fr) minmax(90px,.8fr) auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.frow:first-of-type{border-top:0}
+.frow .air{font-weight:600}
+.frow .tm{color:var(--muted);font-size:13.5px;min-width:0}
+.frow .pr{font-variant-numeric:tabular-nums;font-weight:600}
+@media (max-width:620px){.frow{grid-template-columns:1fr auto;}.frow .tm{grid-column:1/-1;order:3}}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card h3{font-size:18px}
+.card .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.card p{margin:0;font-size:14px}
+.meta{display:grid;gap:3px;margin:0;font-size:13px;color:var(--muted)}
+.meta div{display:flex;gap:6px}
+.meta dt{font-weight:600;min-width:65px;color:var(--ink)}
+.meta dd{margin:0;min-width:0}
+.foot{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding-top:4px}
+.foot select{width:auto;max-width:100%;font-size:13px;padding:6px 8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.b-good{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.b-warn{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+.b-bad{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.b-mute{background:var(--accent-soft);color:var(--accent)}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.filters button{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;border-radius:999px;font-size:13.5px;font-weight:600}
+.filters button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.filters label{display:flex;gap:6px;align-items:center;font-size:13.5px;font-weight:600;margin-left:auto;cursor:pointer;user-select:none}
+.filters label input{width:auto;cursor:pointer}
+.days{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:12px}
+.day{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg);min-width:0;display:grid;gap:4px}
+.day b{display:block;font-family:var(--f-display);font-size:17px;color:var(--accent)}
+.day .wcond{font-weight:600;font-size:14px}
+.day .wstat{font-size:13px;color:var(--muted)}
+.wx{display:flex;gap:14px;align-items:center}
+.wx svg{flex:none;width:54px;height:54px;color:var(--accent)}
+.wx .big{font-family:var(--f-display);font-size:28px;font-weight:800}
+.mapframe{width:100%;height:320px;border:1px solid var(--line);border-radius:12px;margin-bottom:16px;background:var(--surface)}
+.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px}
+.pcol{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:8px;align-content:start;min-width:0}
+.pcol h3{font-size:17px}
+.pitem{display:flex;gap:8px;justify-content:space-between;align-items:flex-start;border-top:1px solid var(--line);padding-top:8px;font-size:14px}
+.pitem.fixed{color:var(--accent);font-weight:600}
+.pitem button{border:0;background:transparent;color:var(--muted);font-size:13px;text-decoration:underline;padding:0}
+.empty{color:var(--muted);font-size:13.5px}
+.share{display:grid;gap:10px}
+.share .row{display:flex;gap:8px;flex-wrap:wrap}
+.share input{flex:1 1 240px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:600;z-index:20;max-width:90vw}
+.src{font-size:12.5px;color:var(--muted);margin-top:30px}
+.src a{color:var(--accent)}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}.card:hover{border-color:var(--accent)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Check in du lịch Việt Nam</div>
+  <div class="dest"><span class="lbl">Du lịch:</span><h1 id="destname">Huế</h1></div>
+
+  <div class="form">
+    <div class="grid">
+      <label class="f" for="d">Du lịch (điểm đến)
+        <select id="d"></select>
+      </label>
+      <label class="f" for="dother" id="dotherw">Nhập bằng tay
+        <input id="dother" type="text" list="prov-list" maxlength="40" placeholder="Gõ chữ cái đầu hoặc tên địa danh...">
+        <datalist id="prov-list"></datalist>
+      </label>
+    </div>
+    <div class="grid">
+      <label class="f" for="o">Xuất phát
+        <select id="o"></select>
+      </label>
+      <label class="f" for="a">Ngày đi
+        <input id="a" type="date" value="2026-11-12">
+      </label>
+      <label class="f" for="b">Ngày về
+        <input id="b" type="date" value="2026-11-15">
+      </label>
+      <label class="check" for="rt"><input id="rt" type="checkbox" checked> Khứ hồi</label>
+    </div>
+    <div class="grid">
+      <label class="f" for="ad">Người lớn
+        <input id="ad" type="number" min="1" max="20" value="2">
+      </label>
+      <div class="f" style="display:grid;gap:5px">
+        <span style="font-size:12.5px;color:var(--muted);font-weight:600">Trẻ em (nhập tuổi từng bé)</span>
+        <div class="kids">
+          <span id="kidchips" class="kids"></span>
+          <span class="add"><input id="kage" type="number" min="0" max="17" placeholder="Tuổi" aria-label="Tuổi của bé"><button class="btn small ghost" id="kadd" type="button">Thêm bé</button></span>
+        </div>
+      </div>
+    </div>
+    <div id="formerr" class="err" hidden></div>
+  </div>
+
+  <nav class="tabs" id="tabs" aria-label="Các mục">
+    <button data-go="s-move" class="on">Di chuyển</button>
+    <button data-go="s-wx">Thời tiết</button>
+    <button data-go="s-see">Du lịch</button>
+    <button data-go="s-eat">Ăn uống</button>
+    <button data-go="s-hotel">Khách sạn</button>
+    <button data-go="s-plan">Lịch trình</button>
+  </nav>
+
+  <section id="s-move">
+    <h2>Di chuyển</h2>
+    <p class="lead" id="move-lead"></p>
+    <div class="seg" role="tablist">
+      <button data-mode="optimal" class="on">Lộ trình tối ưu</button>
+      <button data-mode="fly">Máy bay</button>
+      <button data-mode="train">Tàu hỏa</button>
+      <button data-mode="road">Xe khách / Limousine / Grab</button>
+    </div>
+    <div id="move-body"></div>
+  </section>
+
+  <section id="s-wx">
+    <h2>Thời tiết</h2>
+    <p class="lead">Theo ngày đi và ngày về bạn nhập ở trên (kèm tỷ lệ mưa/nắng và nhiệt độ trung bình từng ngày).</p>
+    <div id="wx-body"></div>
+  </section>
+
+  <section id="s-see">
+    <h2>Địa điểm du lịch</h2>
+    <p class="lead" id="see-lead"></p>
+    <div class="filters" id="see-f"></div>
+    <div class="cards" id="see-cards"></div>
+  </section>
+
+  <section id="s-eat">
+    <h2>Ăn uống</h2>
+    <p class="lead" id="eat-lead"></p>
+    <div class="filters" id="eat-f"></div>
+    <div class="cards" id="eat-cards"></div>
+  </section>
+
+  <section id="s-hotel">
+    <h2>Khách sạn & Chỗ ở</h2>
+    <p class="lead" id="hotel-lead"></p>
+    <div id="hotel-map-wrap"></div>
+    <div class="filters" id="hotel-f"></div>
+    <div class="cards" id="hotel-cards"></div>
+  </section>
+
+  <section id="s-plan">
+    <h2>Lịch trình</h2>
+    <p class="lead">Chọn "Thêm vào lịch" ở các thẻ phía trên, từng mục sẽ vào đúng ngày.</p>
+    <div class="plan" id="plan"></div>
+    <div class="panel share" style="margin-top:16px">
+      <h3 style="font-size:18px">Chia sẻ lịch trình</h3>
+      <p class="note" style="margin:0">Người nhận mở link là thấy đúng điểm xuất phát, ngày đi, ngày về, số người và các mục bạn đã chọn. Không cần đăng nhập.</p>
+      <div class="row"><input id="sharelink" readonly aria-label="Link chia sẻ"><button class="btn" id="copylink" type="button">Sao chép link</button></div>
+      <div class="row"><input id="paste" placeholder="Dán link hoặc mã chia sẻ để mở lịch trình của người khác" aria-label="Dán link hoặc mã"><button class="btn ghost" id="openpaste" type="button">Mở</button></div>
+    </div>
+  </section>
+
+  <p class="src">Giá vé, giờ chạy và giá phòng là số tham khảo, có thể thay đổi theo thực tế. Luôn bấm vào link để check trực tiếp đúng ngày. Thời tiết hiển thị số liệu trung bình khí hậu từng ngày.</p>
+</div>
+<div id="toast" role="status" hidden></div>
+
+<script>
+const IO={in:'Trong nhà',out:'Ngoài trời'};
+const DK='Nên đi cùng người lớn và mang đủ nước uống.';
+function P(a){return{id:a[0],n:a[1],t:a[2].split(','),io:IO[a[3]],s:{r:+a[4][0],c:+a[4][1],d:+a[4][2]},kid:a[5],d:a[6],cost:a[7]||'Xem giá tại nơi bán vé',hrs:a[8]||'Kiểm tra giờ mở cửa',kn:a[9]||DK}}
+function F(a){return{id:a[0],n:a[1],m:a[2].split(','),s:{r:+a[3][0],c:+a[3][1],d:+a[3][2]},kid:a[4],spicy:!!a[5],d:a[6],cost:a[7],q:a[8]}}
+function H(a){return{id:a[0],n:a[1],type:a[2],price:a[3],d:a[4],map:a[5],near:a[6]}}
+
+/* Dữ liệu đầy đủ 11 điểm đến + Khách sạn, Homestay, Vinhomes, Nhà nghỉ & khoảng cách */
+const DEST={
+ hn:{name:'Hà Nội',sn:'Hà Nội',reg:'Miền Bắc',code:'HAN',apt:'Nội Bài (HAN)',rail:'Hà Nội',rain:[5,6,7,8,9],cold:[12,1,2],
+  tmp:{r:'26–35°C, nóng ẩm, mưa rào',c:'10–20°C, lạnh, hay mưa phùn',d:'18–30°C, dễ chịu'},
+  wstat:{r:{t:'30°C',p:'70% khả năng mưa rào, 30% nắng'},c:{t:'16°C',p:'25% mưa phùn, 75% nhiều mây/se lạnh'},d:{t:'24°C',p:'15% mưa, 85% nắng đẹp'}},
+  places:[
+   P(['hn-p1','Hồ Hoàn Kiếm và phố cổ','photo,family','out','122',0,'Đi bộ quanh hồ, đền Ngọc Sơn và các phố nghề. Cuối tuần có phố đi bộ.','Miễn phí (đền Ngọc Sơn có vé)','Cả ngày','Bằng phẳng, đẩy xe được; cuối tuần rất đông.']),
+   P(['hn-p2','Văn Miếu – Quốc Tử Giám','heritage,photo','out','122',5,'Trường đại học đầu tiên của Việt Nam, có vườn bia tiến sĩ và nhiều cây cổ thụ.',null,'Khoảng 8:00–17:00','Bé tiểu học thích xem bia đặt trên lưng rùa.']),
+   P(['hn-p3','Hoàng thành Thăng Long','heritage','out','122',6,'Di sản thế giới gồm khu khảo cổ, cột cờ và cổng Đoan Môn.',null,'Khoảng 8:00–17:00','Sân rộng, ít bóng râm lúc trưa.']),
+   P(['hn-p4','Bảo tàng Dân tộc học','in,heritage,family','in','222',4,'Trưng bày về các dân tộc Việt Nam, có nhà sàn và nhà rông ngoài sân.',null,'Khoảng 8:30–17:30, thường nghỉ thứ Hai','Bé thích chạy chơi khu nhà truyền thống.']),
+   P(['hn-p5','Múa rối nước Thăng Long','in,family','in','222',3,'Xem múa rối nước truyền thống gần hồ Hoàn Kiếm, khoảng 50 phút.','Xem giá tại nhà hát','Nhiều suất trong ngày','Hợp bé từ 3 tuổi.']),
+   P(['hn-p6','Chùa Trấn Quốc và Hồ Tây','heritage,photo,nature','out','122',0,'Chùa cổ trên đảo nhỏ ven Hồ Tây, đi dạo ven hồ vào chiều tối.','Miễn phí','Cả ngày','Đường bằng phẳng.'])
+  ],
+  foods:[
+   F(['hn-f1','Phở bò','sang,trua','122',2,0,'Phở tái hoặc chín, nước trong, ăn kèm quẩy.','45.000–70.000đ','phở bò']),
+   F(['hn-f2','Bún chả','trua','112',3,0,'Chả nướng than, bún và nước chấm chua ngọt.','50.000–80.000đ','bún chả']),
+   F(['hn-f3','Bánh cuốn nóng','sang','222',2,0,'Bánh tráng mỏng cuốn thịt, ăn với chả và nước mắm.','30.000–50.000đ','bánh cuốn']),
+   F(['hn-f4','Chả cá','toi','222',5,0,'Cá nướng nghệ, ăn với bún, rau thì là và mẻ.','120.000–200.000đ','chả cá']),
+   F(['hn-f5','Cà phê trứng','van','222',12,0,'Món cà phê đánh trứng, hợp người lớn; bé nên chọn nước khác.','35.000–55.000đ','cà phê trứng'])
+  ],
+  hotels:[
+   H(['hn-h1','Capella Hanoi','hotel','3.500.000đ - 7.000.000đ/đêm','Khách sạn sang trọng mang phong cách nghệ thuật opera cổ điển.','Capella Hanoi','Hồ Hoàn Kiếm (~0.3 km), Phố cổ (~0.1 km), Phở bò Lý Quốc Sư (~0.4 km)']),
+   H(['hn-h2','Lakeside Homestay Old Quarter','homestay','400.000đ - 800.000đ/đêm','Homestay ấm cúng ngay trong lòng phố cổ Hà Nội.','Hàng Bè, Hoàn Kiếm, Hà Nội','Hồ Hoàn Kiếm (~0.2 km), Múa rối nước (~0.3 km), Bún chả (~0.5 km)']),
+   H(['hn-h3','Vinhomes West Point / Metropolis','vinhomes','900.000đ - 1.800.000đ/đêm','Căn hộ dịch vụ cao cấp, đầy đủ bếp, máy giặt, view thành phố.','Vinhomes Metropolis Liễu Giai','Chùa Trấn Quốc (~2.5 km), Văn Miếu (~3.0 km)']),
+   H(['hn-h4','Nhà nghỉ Phố cổ Bình Minh','nhanghi','250.000đ - 350.000đ/đêm','Nhà nghỉ bình dân sạch sẽ, thuận tiện đi lại khu trung tâm.','Phố cổ Hà Nội','Hồ Hoàn Kiếm (~0.8 km), Chợ Đồng Xuân (~0.6 km)'])
+  ]},
+ qn:{name:'Hạ Long (Quảng Ninh)',on:'Quảng Ninh',sn:'Hạ Long',reg:'Miền Bắc',code:'VDO',apt:'Vân Đồn (VDO)',rail:null,near:'Hà Nội',rain:[5,6,7,8,9],cold:[12,1,2],
+  drive:'Sân bay Vân Đồn cách Hạ Long khoảng 50–60 km, cần đi xe thêm.',
+  tmp:{r:'26–34°C, mưa rào, có thể có bão',c:'10–18°C, lạnh, sương mù',d:'18–28°C, dễ chịu'},
+  wstat:{r:{t:'29°C',p:'75% mưa rào, 25% nắng'},c:{t:'15°C',p:'30% mưa/sương, 70% khô ráo'},d:{t:'23°C',p:'10% mưa, 90% nắng đẹp'}},
+  places:[
+   P(['qn-p1','Vịnh Hạ Long (du thuyền)','nature,photo,family','out','012',3,'Đi du thuyền ngắm đảo đá vôi, có tour trong ngày hoặc ngủ đêm trên vịnh.','Xem giá theo tour','Tour khoảng 4–8 giờ','Bé phải mặc áo phao.']),
+   P(['qn-p2','Hang Sửng Sốt','nature,photo','out','112',4,'Hang động lớn trên vịnh, đường lên có bậc thang.',null,null,'Có bậc thang, nên cho bé đi chậm.']),
+   P(['qn-p3','Đảo Ti Tốp','nature,photo,family','out','012',5,'Leo bậc thang ngắm vịnh từ trên cao rồi xuống tắm biển.',null,null,'Nhiều bậc thang lên đỉnh.']),
+   P(['qn-p4','Bảo tàng Quảng Ninh','in,heritage,family','in','222',5,'Trưng bày về ngành than, lịch sử và văn hóa Quảng Ninh, có mái che khi mưa.',null,null,'Hợp ngày mưa.']),
+   P(['qn-p5','Chợ đêm Hạ Long','photo,family','out','112',0,'Quà vặt, hải sản khô và đồ lưu niệm buổi tối.','Vào cửa miễn phí','Buổi tối','Đông vào cuối tuần.']),
+   P(['qn-p6','Yên Tử','heritage,nature','out','112',8,'Núi thiêng gắn với thiền phái Trúc Lâm, có cáp treo lên cao.',null,'Đi từ sáng sớm','Đường đi dài, bé nhỏ dễ mệt.'])
+  ],
+  foods:[
+   F(['qn-f1','Chả mực Hạ Long','trua,toi','222',3,0,'Mực giã tay rồi chiên vàng, đặc sản của vùng.','60.000–120.000đ','chả mực']),
+   F(['qn-f2','Bánh cuốn chả mực','sang','222',3,0,'Bánh cuốn nóng ăn với chả mực chiên.','40.000–60.000đ','bánh cuốn chả mực']),
+   F(['qn-f3','Hải sản','trua,toi','221',3,0,'Nên chọn quán niêm yết giá và hỏi giá trước khi gọi.','150.000–400.000đ/người','hải sản']),
+   F(['qn-f4','Sá sùng','toi','222',8,0,'Sá sùng xào hoặc nấu cháo, món lạ miệng.','100.000–200.000đ','sá sùng'])
+  ],
+  hotels:[
+   H(['qn-h1','Vinpearl Resort & Spa Hạ Long','hotel','2.000.000đ - 4.500.000đ/đêm','Khu nghỉ dưỡng tọa lạc hoàn toàn trên mặt biển đảo Rều, view vịnh tuyệt đẹp.','Vinpearl Resort & Spa Hạ Long','Vịnh Hạ Long (~0 km), Chợ đêm Hạ Long (~2.0 km)']),
+   H(['qn-h2','Ha Long Ginger Homestay','homestay','500.000đ - 900.000đ/đêm','Homestay gần biển Bãi Cháy, không gian xanh mát, có bếp nấu ăn.','Bãi Cháy, Hạ Long','Chợ đêm Hạ Long (~1.0 km), Chả mực (~0.8 km), Bảo tàng Quảng Ninh (~6.5 km)']),
+   H(['qn-h3','Vinhomes Dragon Bay Căn hộ nghỉ dưỡng','vinhomes','800.000đ - 1.600.000đ/đêm','Khu đô thị ven biển ngay trung tâm Hòn Gai, view thẳng vịnh.','Vinhomes Dragon Bay Hạ Long','Bảo tàng Quảng Ninh (~1.5 km), Quán hải sản Hòn Gai (~0.5 km)']),
+   H(['qn-h4','Nhà nghỉ Bãi Cháy Hạ Long','nhanghi','250.000đ - 400.000đ/đêm','Nhà nghỉ bình dân gần khu du lịch Bãi Cháy.','Bãi Cháy, Hạ Long','Chợ đêm Hạ Long (~0.7 km), Cảng tàu du lịch (~1.5 km)'])
+  ]},
+ sp:{name:'Sa Pa',sn:'Sa Pa',reg:'Miền Bắc',code:'HAN',apt:'Nội Bài (HAN)',rail:'Lào Cai',noOrigin:true,rain:[5,6,7,8,9],cold:[11,12,1,2],
+  drive:'Sa Pa không có sân bay. Bay đến Hà Nội rồi đi tàu đêm hoặc xe giường nằm lên Lào Cai và Sa Pa, khoảng 5–6 giờ.',
+  tmp:{r:'15–25°C, mưa nhiều, nhiều sương',c:'0–12°C, rất lạnh, có thể có băng giá',d:'10–22°C, mát'},
+  wstat:{r:{t:'20°C',p:'80% mưa/sương mù, 20% nắng nhẹ'},c:{t:'8°C',p:'35% mưa phùn/sương, 65% khô lạnh'},d:{t:'17°C',p:'15% mưa, 85% nắng đẹp'}},
+  places:[
+   P(['sp-p1','Fansipan (cáp treo)','nature,photo,family','out','112',3,'Cáp treo lên đỉnh 3.143 m. Trên đỉnh rất lạnh và nhiều mây.',null,null,'Mặc áo giữ nhiệt, mang mũ và găng cho bé.']),
+   P(['sp-p2','Bản Cát Cát','heritage,photo','out','112',3,'Bản người H’Mông gần thị trấn, đi bộ xuống thác và xem nghề dệt.',null,'Cả ngày','Đường dốc, trơn khi mưa.']),
+   P(['sp-p3','Thung lũng Mường Hoa','nature,photo','out','112',4,'Ruộng bậc thang đẹp nhất lúc lúa chín, khoảng tháng 9–10.','Xem giá tại nơi bán vé','Cả ngày','Đi bộ nhiều.']),
+   P(['sp-p4','Thác Bạc','nature,photo','out','112',3,'Thác nước cao gần đường Sa Pa – Lai Châu, có bậc thang lên xem.','Xem giá tại cổng','Cả ngày','Đá trơn khi mưa.']),
+   P(['sp-p5','Nhà thờ đá và quảng trường Sa Pa','heritage,photo,family','out','122',0,'Trung tâm thị trấn, nhiều quán ăn, chợ đêm cuối tuần.','Miễn phí','Cả ngày','Trời tối nhanh và lạnh.']),
+   P(['sp-p6','Núi Hàm Rồng','nature,photo','out','112',5,'Vườn hoa và điểm ngắm toàn cảnh thị trấn.',null,null,'Có bậc thang.'])
+  ],
+  foods:[
+   F(['sp-f1','Lẩu cá hồi','trua,toi','222',3,0,'Cá hồi nấu lẩu rau rừng, hợp ngày lạnh.','150.000–250.000đ/người','lẩu cá hồi']),
+   F(['sp-f2','Thịt lợn cắp nách nướng','toi','222',4,0,'Thịt lợn bản nướng than, ăn kèm chẩm chéo.','100.000–200.000đ','lợn cắp nách']),
+   F(['sp-f3','Xôi ngũ sắc','sang','222',2,0,'Xôi nhiều màu từ lá cây rừng, ăn sáng nhẹ.','20.000–40.000đ','xôi ngũ sắc']),
+   F(['sp-f4','Ngô, khoai nướng bên đường','van','222',2,0,'Món ấm bụng khi trời lạnh.','10.000–30.000đ','ngô nướng']),
+   F(['sp-f5','Thắng cố','trua','122',12,1,'Món truyền thống của người H’Mông, mùi vị đậm, hợp người lớn.','60.000–100.000đ','thắng cố'])
+  ],
+  hotels:[
+   H(['sp-h1','Hotel de la Coup - MGallery Sa Pa','hotel','2.800.000đ - 5.500.000đ/đêm','Khách sạn 5 sao mang phong cách kiến trúc Pháp cổ điển giữa thị trấn mờ sương.','Hotel de la Coup Sa Pa','Nhà thờ đá Sa Pa (~0.2 km), Ga tàu Mường Hoa lên Fansipan (~0.1 km), Núi Hàm Rồng (~0.5 km)']),
+   H(['sp-h2','Little View Homestay Sa Pa','homestay','350.000đ - 650.000đ/đêm','Homestay gỗ ấm cúng ngay sát trung tâm thị trấn, view núi đẹp.','Cầu Mây, Sa Pa','Nhà thờ đá (~0.3 km), Bản Cát Cát (~1.8 km), Lẩu cá hồi (~0.2 km)']),
+   H(['sp-h3','Nhà nghỉ Sapa Trung Tâm','nhanghi','250.000đ - 400.000đ/đêm','Nhà nghỉ bình dân ấm áp, có chăn điện mùa đông.','Thị xã Sa Pa','Quảng trường Sa Pa (~0.4 km), Chợ Sa Pa (~0.8 km)'])
+  ]},
+ hue:{name:'Huế',sn:'Huế',reg:'Miền Trung',code:'HUI',apt:'Phú Bài (HUI)',rail:'Huế',rain:[9,10,11,12],cold:[1,2],
+  tmp:{r:'21–26°C, mưa nhiều',c:'17–23°C, lạnh, mưa phùn',d:'25–36°C, nắng nóng'},
+  wstat:{r:{t:'23°C',p:'80% mưa rào/mưa lớn, 20% tạnh ráo'},c:{t:'20°C',p:'40% mưa phùn, 60% mát mẻ'},d:{t:'30°C',p:'10% mưa, 90% nắng ráo'}},
+  places:[
+   P(['hue-p1','Đại Nội (Hoàng thành Huế)','heritage,photo','out','121',4,'Kinh thành triều Nguyễn với Ngọ Môn, điện Thái Hòa và Tử Cấm Thành. Cần 2–3 giờ.','200.000đ/người lớn, trẻ dưới 7 tuổi miễn vé','Khoảng 7:00–17:30','Đi bộ nhiều, bé nhỏ dễ mỏi chân.']),
+   P(['hue-p2','Bảo tàng Cổ vật Cung đình Huế','in,heritage,family','in','222',6,'Nhà trưng bày ngự dụng, long bào, đồ sứ và đồ vàng bạc của triều Nguyễn, có mái che.','Xem giá tại quầy','Khoảng 8:00–17:00','Hợp bé từ lớp 1 vì có thể kể chuyện vua chúa.']),
+   P(['hue-p3','Chùa Thiên Mụ','heritage,photo','out','122',0,'Ngôi chùa cổ trên đồi Hà Khê, tháp Phước Duyên bên sông Hương. Chiều tà rất đẹp.','Miễn phí','Cả ngày','Đường bằng phẳng, bé nào cũng đi được.']),
+   P(['hue-p4','Lăng Khải Định','heritage,photo','out','121',7,'Lăng pha kiến trúc Đông–Tây, nội thất khảm sành sứ rực rỡ. Có nhiều bậc thang lên cung Thiên Định.','150.000đ/người lớn','Khoảng 7:00–17:30','Nhiều bậc thang, bé dưới 7 tuổi khó leo.']),
+   P(['hue-p5','Lăng Tự Đức','heritage,nature,photo','out','122',5,'Lăng nằm giữa rừng thông và hồ Lưu Khiêm, yên tĩnh, nhiều góc chụp ảnh.','150.000đ/người lớn','Khoảng 7:00–17:30','Có hồ nước, cần nắm tay bé.']),
+   P(['hue-p6','Thuyền rồng sông Hương, nghe ca Huế','photo,family','out','012',3,'Đi thuyền buổi tối, nghe ca Huế và thả đèn hoa đăng. Mưa hoặc gió lạnh thì nên hoãn.','Giá theo thuyền, hỏi rõ trước khi lên','Buổi chiều và tối','Bé phải mặc áo phao.']),
+   P(['hue-p7','Cầu Trường Tiền và phố đi bộ Nguyễn Đình Chiểu','photo,family','out','122',0,'Đi dạo bên sông Hương buổi tối, cầu Trường Tiền lên đèn, nhiều quán cà phê và quà vặt.','Miễn phí','Từ chiều tối','Bằng phẳng, đẩy xe được.']),
+   P(['hue-p8','Chợ Đông Ba','in,family','in','222',0,'Chợ lớn nhất Huế: mè xửng, nón lá, tré, nem chả và đồ lưu niệm. Có mái che khi trời mưa.','Vào cửa miễn phí','Sáng đến chiều','Đông, nên giữ tay bé.']),
+   P(['hue-p9','Suối khoáng nóng Thanh Tân','nature,family','out','221',3,'Tắm khoáng nóng, hợp ngày lạnh và mưa. Cách trung tâm khoảng 30–40 km nên cần đi xe.','Xem giá tại cổng','Khoảng 8:00–20:00','Có hồ nông cho bé, mang theo đồ thay.']),
+   P(['hue-p10','Biển Thuận An','nature,family','out','012',4,'Bãi biển cách trung tâm khoảng 13 km. Mùa mưa sóng lớn, không nên tắm.','Miễn phí','Cả ngày','Chỉ cho bé tắm khi biển lặng.']),
+   P(['hue-p11','Vườn quốc gia Bạch Mã','nature,photo','out','012',8,'Rừng núi, thác và đường trekking, cách Huế khoảng 60 km. Mưa lớn đường rất trơn và có thể đóng.','Xem giá tại cổng','Đi từ sáng sớm','Đường đèo dài, bé nhỏ dễ say xe.']),
+   P(['hue-p12','Làng hương Thủy Xuân','photo,family','out','012',4,'Làng làm hương, sân phơi hương nhiều màu cần nắng. Mùa mưa thường không phơi được.','Miễn phí','Sáng đến chiều','Bé thích xem làm hương.'])
+  ],
+  foods:[
+   F(['hue-f1','Bún bò Huế','sang,trua','221',3,1,'Nước dùng sả, mắm ruốc, chả cua, giò heo. Xin bớt ớt cho bé.','40.000–60.000đ','bún bò Huế']),
+   F(['hue-f2','Bánh bèo, bánh nậm, bánh lọc','sang,van','222',2,0,'Bánh hấp nhỏ ăn với nước mắm ngọt và tôm cháy, không cay.','30.000–50.000đ','bánh bèo nậm lọc']),
+   F(['hue-f3','Cơm hến','trua','122',6,1,'Hến xào ăn với cơm nguội, rau sống và mắm ruốc. Nổi tiếng ở Cồn Hến.','20.000–35.000đ','cơm hến']),
+   F(['hue-f4','Bánh khoái','trua,toi','221',3,0,'Bánh chiên giòn nhân tôm thịt, ăn kèm rau và tương đậu.','40.000–70.000đ','bánh khoái']),
+   F(['hue-f5','Nem lụi','toi','222',3,0,'Thịt nướng xiên sả, cuốn bánh tráng với rau, chấm tương lạc.','50.000–90.000đ','nem lụi']),
+   F(['hue-f6','Bánh canh Nam Phổ','sang,trua','221',2,0,'Sợi bánh dày, nước dùng sánh, tôm và giò heo. Hợp ngày lạnh.','40.000–60.000đ','bánh canh Nam Phổ']),
+   F(['hue-f7','Chè Huế','van','112',2,0,'Chè hạt sen, chè bột lọc, chè đậu ván nhiều loại, ăn thử ở các quán chè hẻm.','15.000–25.000đ/ly','chè Huế']),
+   F(['hue-f8','Ẩm thực cung đình','toi','222',6,0,'Mâm cơm theo lối ngự thiện, bày công phu. Nên đặt trước, mặc lịch sự.','300.000–600.000đ','nhà hàng cung đình']),
+   F(['hue-f9','Mè xửng và bánh ép','van','222',2,0,'Quà vặt và quà mang về, mua ở chợ Đông Ba hoặc các tiệm đặc sản.','20.000–60.000đ','mè xửng'])
+  ],
+  hotels:[
+   H(['hue-h1','Vinpearl Hotel Huế','hotel','1.200.000đ - 2.500.000đ/đêm','Khách sạn cao cấp trung tâm thành phố, tiện ích chuẩn quốc tế, view sông Hương.','Vinpearl Hotel Huế','Cầu Trường Tiền (~0.8 km), Phố đi bộ Nguyễn Đình Chiểu (~0.9 km), Bún bò Huế (~0.5 km)']),
+   H(['hue-h2','Mosaic Garden Homestay','homestay','400.000đ - 700.000đ/đêm','Homestay không gian xanh, yên bình, thiết kế tinh tế gần trung tâm.','Vỹ Dạ, Huế','Đại Nội Huế (~2.2 km), Chợ Đông Ba (~1.5 km), Cơm hến Cồn Hến (~1.0 km)']),
+   H(['hue-h3','Căn hộ dịch vụ The Manor Crown / Vincom','vinhomes','750.000đ - 1.400.000đ/đêm','Căn hộ tiện nghi kiểu hiện đại, đầy đủ phòng khách và bếp nấu ăn gia đình.','The Manor Crown Huế','Cầu Trường Tiền (~1.2 km), Chè Huế (~0.6 km), Chợ Đông Ba (~1.5 km)']),
+   H(['hue-h4','Nhà nghỉ Bình Minh Huế','nhanghi','250.000đ - 350.000đ/đêm','Nhà nghỉ sạch sẽ, giá tiết kiệm ngay gần ga Huế, tiện bắt taxi.','Ga Huế','Ga Huế (~0.3 km), Đại Nội (~2.5 km), Bánh bèo nậm lọc (~0.5 km)'])
+  ]},
+ dn:{name:'Đà Nẵng',sn:'Đà Nẵng',reg:'Miền Trung',code:'DAD',apt:'Đà Nẵng (DAD)',rail:'Đà Nẵng',rain:[9,10,11,12],cold:[1,2],
+  tmp:{r:'22–28°C, mưa nhiều, có thể có bão',c:'18–24°C, se lạnh, mưa nhẹ',d:'25–35°C, nắng nóng'},
+  wstat:{r:{t:'25°C',p:'75% mưa, 25% tạnh ráo'},c:{t:'21°C',p:'30% mưa nhẹ, 70% nắng nhẹ'},d:{t:'30°C',p:'10% mưa, 90% nắng đẹp'}},
+  places:[
+   P(['dn-p1','Bà Nà Hills và Cầu Vàng','nature,photo,family','out','012',3,'Cáp treo lên khu nghỉ trên núi, Cầu Vàng nổi tiếng. Mưa và sương mù thì khó thấy cảnh.',null,null,'Trên núi mát và nhiều gió, mang áo khoác mỏng.']),
+   P(['dn-p2','Bãi biển Mỹ Khê','nature,family','out','012',3,'Bãi biển dài, cát mịn, nhiều quán hải sản. Mùa mưa sóng lớn.','Miễn phí','Cả ngày','Chỉ cho bé tắm khi biển lặng và có cứu hộ.']),
+   P(['dn-p3','Bán đảo Sơn Trà và chùa Linh Ứng','nature,heritage,photo','out','112',4,'Đường đèo ven biển, tượng Phật Quan Âm cao khoảng 67 m và tầm nhìn ra vịnh.','Miễn phí','Cả ngày','Đường đèo quanh co, bé dễ say xe.']),
+   P(['dn-p4','Ngũ Hành Sơn','heritage,nature,photo','out','112',6,'Núi đá vôi có hang động và chùa, nhiều bậc thang.',null,null,'Bậc thang trơn khi mưa.']),
+   P(['dn-p5','Bảo tàng Điêu khắc Chăm','in,heritage,family','in','222',6,'Bộ sưu tập điêu khắc Chăm lớn nhất cả nước, có mái che.',null,null,'Hợp ngày mưa.']),
+   P(['dn-p6','Cầu Rồng và bờ sông Hàn','photo,family','out','122',0,'Cầu Rồng phun lửa và nước vào một số tối cuối tuần, nên kiểm tra lịch.','Miễn phí','Từ chiều tối','Bằng phẳng, đẩy xe được.'])
+  ],
+  foods:[
+   F(['dn-f1','Mì Quảng','sang,trua','221',3,0,'Sợi mì dày, ít nước, ăn với tôm thịt và bánh tráng.','40.000–70.000đ','mì Quảng']),
+   F(['dn-f2','Bánh tráng cuốn thịt heo','trua,toi','222',3,0,'Thịt heo luộc cuốn rau sống, chấm mắm nêm.','80.000–150.000đ','bánh tráng cuốn thịt heo']),
+   F(['dn-f3','Bún chả cá','sang','221',3,0,'Nước dùng ngọt thanh từ cá, ăn kèm rau.','35.000–55.000đ','bún chả cá']),
+   F(['dn-f4','Bánh xèo','trua,toi','222',3,0,'Bánh giòn nhỏ, cuốn rau và chấm nước lèo.','60.000–120.000đ','bánh xèo']),
+   F(['dn-f5','Hải sản bãi biển','toi','112',3,0,'Chọn quán niêm yết giá và hỏi giá trước khi gọi.','150.000–400.000đ/người','hải sản'])
+  ],
+  hotels:[
+   H(['dn-h1','Novotel Danang Premier Han River','hotel','2.200.000đ - 4.500.000đ/đêm','Khách sạn cao cấp view sông Hàn, có bar tầng thượng ngắm thành phố.','Novotel Đà Nẵng','Cầu Rồng (~1.5 km), Bảo tàng Điêu khắc Chăm (~1.8 km), Mì Quảng (~0.5 km)']),
+   H(['dn-h2','DNG Homestay Mỹ Khê','homestay','350.000đ - 650.000đ/đêm','Homestay gần bãi biển Mỹ Khê, phòng thoáng mát, tiện nghi.','Phạm Văn Đồng, Đà Nẵng','Bãi biển Mỹ Khê (~0.4 km), Hải sản bãi biển (~0.5 km), Cầu Rồng (~2.0 km)']),
+   H(['dn-h3','Căn hộ Monarchy / Vincom Riverview','vinhomes','800.000đ - 1.500.000đ/đêm','Căn hộ cao cấp ven sông Hàn, gần cầu Rồng, an ninh 24/7.','Monarchy Đà Nẵng','Cầu Rồng (~0.8 km), Biển Mỹ Khê (~1.5 km)']),
+   H(['dn-h4','Nhà nghỉ Sông Hàn Đà Nẵng','nhanghi','250.000đ - 400.000đ/đêm','Nhà nghỉ sạch sẽ ngay trung tâm quận Hải Châu.','Hải Châu, Đà Nẵng','Chợ Hàn (~0.6 km), Cầu Rồng (~1.0 km)'])
+  ]},
+ ha:{name:'Hội An',sn:'Hội An',reg:'Miền Trung',code:'DAD',apt:'Đà Nẵng (DAD)',rail:'Đà Nẵng',noOrigin:true,rain:[9,10,11,12],cold:[1,2],
+  drive:'Hội An không có sân bay. Từ sân bay Đà Nẵng đến Hội An khoảng 30 km, đi xe 45–60 phút.',
+  tmp:{r:'22–28°C, mưa nhiều, dễ ngập phố cổ',c:'18–24°C, se lạnh',d:'25–35°C, nắng nóng'},
+  wstat:{r:{t:'25°C',p:'75% mưa, 25% tạnh ráo'},c:{t:'21°C',p:'25% mưa nhẹ, 75% mát mẻ'},d:{t:'30°C',p:'10% mưa, 90% nắng đẹp'}},
+  places:[
+   P(['ha-p1','Phố cổ Hội An','heritage,photo,family','out','122',0,'Nhà cổ, hội quán và đèn lồng. Vé tham quan mua theo vé liên hoàn tại các điểm bán vé.','Mua vé tại điểm bán vé phố cổ','Cả ngày','Phố nhỏ, đẩy xe được nhưng đông vào tối.']),
+   P(['ha-p2','Chùa Cầu','heritage,photo','out','122',0,'Cây cầu có mái che, biểu tượng của Hội An.',null,'Cả ngày','Thuộc vé phố cổ, kiểm tra tại chỗ.']),
+   P(['ha-p3','Rừng dừa Bảy Mẫu','nature,family','out','012',3,'Ngồi thuyền thúng giữa rừng dừa nước, bé thường rất thích.','Xem giá tại nơi bán vé','Cả ngày','Phải mặc áo phao; mưa thì khó chèo.']),
+   P(['ha-p4','Biển An Bàng','nature,family','out','012',3,'Bãi biển yên tĩnh cách phố cổ khoảng 4 km.','Miễn phí','Cả ngày','Chỉ tắm khi biển lặng.']),
+   P(['ha-p5','Làng rau Trà Quế','nature,family','out','122',4,'Làng rau, đạp xe và học nấu ăn cùng người địa phương.','Xem giá tại nơi bán vé','Cả ngày','Hợp bé thích trải nghiệm.']),
+   P(['ha-p6','Thả hoa đăng trên sông Hoài','photo,family','out','112',0,'Buổi tối thả đèn hoa đăng, mưa lớn thì có thể hủy.','Giá theo thuyền, hỏi trước','Buổi tối','Bé phải mặc áo phao.'])
+  ],
+  foods:[
+   F(['ha-f1','Cao lầu','trua','222',4,0,'Sợi mì dai ăn với thịt xá xíu và rau sống, đặc sản của phố cổ.','40.000–60.000đ','cao lầu']),
+   F(['ha-f2','Cơm gà Hội An','trua','222',2,0,'Cơm nấu nước gà, xé gà ăn với rau răm.','40.000–60.000đ','cơm gà']),
+   F(['ha-f3','Bánh mì Hội An','sang,van','222',2,0,'Bánh mì nhân thịt, pate và rau, ăn nhanh.','20.000–40.000đ','bánh mì']),
+   F(['ha-f4','Bánh bao bánh vạc','van','222',2,0,'Bánh trong như hoa hồng trắng, nhân tôm thịt.','50.000–90.000đ','bánh bao bánh vạc'])
+  ],
+  hotels:[
+   H(['ha-h1','Anantara Hoi An Resort','hotel','3.000.000đ - 6.000.000đ/đêm','Khu nghỉ dưỡng bên sông Hoài, thiết kế lãng mạn mang đậm chất phố cổ.','Anantara Hoi An Resort','Phố cổ Hội An (~0.5 km), Chùa Cầu (~0.8 km), Cao lầu (~0.4 km)']),
+   H(['ha-h2','The Local House Hoi An','homestay','450.000đ - 800.000đ/đêm','Homestay yên tĩnh sát đồng lúa, có xe đạp miễn phí dạo phố.','Cẩm Châu, Hội An','Phố cổ Hội An (~1.5 km), Biển An Bàng (~2.2 km), Rừng dừa Bảy Mẫu (~3.0 km)']),
+   H(['ha-h3','Nhà nghỉ Phố Hội','nhanghi','250.000đ - 400.000đ/đêm','Nhà nghỉ bình dân gần khu vực phố cổ, thuận tiện đi bộ.','Cẩm Phô, Hội An','Chùa Cầu (~0.6 km), Chợ Hội An (~0.9 km)'])
+  ]},
+ nt:{name:'Nha Trang',sn:'Nha Trang',reg:'Miền Trung',code:'CXR',apt:'Cam Ranh (CXR)',rail:'Nha Trang',rain:[9,10,11,12],cold:[],
+  drive:'Sân bay Cam Ranh cách trung tâm Nha Trang khoảng 30–35 km.',
+  tmp:{r:'23–29°C, mưa nhiều, biển động',c:'23–29°C',d:'24–33°C, nắng đẹp'},
+  wstat:{r:{t:'26°C',p:'65% mưa rào, 35% nắng'},c:{t:'26°C',p:'20% mưa, 80% nắng đẹp'},d:{t:'29°C',p:'10% mưa, 90% nắng đẹp'}},
+  places:[
+   P(['nt-p1','Tour bốn đảo, vịnh Nha Trang','nature,family','out','022',4,'Đi tàu thăm các đảo, tắm biển và lặn ngắm san hô.','Xem giá theo tour','Tour cả ngày','Bé phải mặc áo phao; bỏ tour nếu biển động.']),
+   P(['nt-p2','Tháp Bà Ponagar','heritage,photo','out','122',3,'Cụm tháp Chăm cổ trên đồi gần cửa sông Cái.',null,'Cả ngày','Nên đi sáng sớm cho đỡ nắng.']),
+   P(['nt-p3','Viện Hải dương học','in,family','in','222',3,'Bể cá và mẫu vật sinh vật biển, hợp ngày mưa.',null,null,'Bé thích xem cá và rùa biển.']),
+   P(['nt-p4','Bảo tàng Yersin','in,heritage','in','222',6,'Nhà trưng bày về bác sĩ Alexandre Yersin và đời sống của ông ở Nha Trang.',null,null,'Hợp bé lớn, có nhiều hiện vật.']),
+   P(['nt-p5','Chợ Đầm','in,family','in','222',0,'Chợ lớn, mua hải sản khô, đồ lưu niệm và quà biển.','Vào cửa miễn phí','Sáng đến chiều','Đông và nóng.']),
+   P(['nt-p6','Hòn Chồng','nature,photo','out','122',0,'Cụm đá lớn ven biển, đẹp lúc hoàng hôn.',null,null,'Có bậc đá, cần giữ bé.'])
+  ],
+  foods:[
+   F(['nt-f1','Bún chả cá','sang','222',3,0,'Nước dùng ngọt từ cá, ăn kèm rau.','35.000–55.000đ','bún chả cá']),
+   F(['nt-f2','Nem nướng Ninh Hòa','trua,toi','222',3,0,'Nem nướng cuốn bánh tráng, rau và chấm tương.','60.000–100.000đ','nem nướng Ninh Hòa']),
+   F(['nt-f3','Bánh canh chả cá','sang,trua','222',2,0,'Sợi bánh canh, chả cá và nước dùng thanh.','35.000–55.000đ','bánh canh chả cá']),
+   F(['nt-f4','Bánh căn','sang,van','222',2,0,'Bánh gạo nướng khuôn nhỏ, ăn với nước mắm hoặc nước lèo.','30.000–50.000đ','bánh căn']),
+   F(['nt-f5','Hải sản','toi','112',3,0,'Chọn quán niêm yết giá và hỏi giá trước khi gọi.','150.000–400.000đ/người','hải sản'])
+  ],
+  hotels:[
+   H(['nt-h1','InterContinental Nha Trang','hotel','2.500.000đ - 5.000.000đ/đêm','Khách sạn sát biển Trần Phú, dịch vụ tiêu chuẩn quốc tế 5 sao.','InterContinental Nha Trang','Bãi biển Trần Phú (~0.1 km), Chợ Đầm (~1.2 km), Nem nướng Ninh Hòa (~0.8 km)']),
+   H(['nt-h2','An Nam Homestay Nha Trang','homestay','350.000đ - 600.000đ/đêm','Homestay phong cách mộc mạc, gần khu phố Tây nhộn nhịp.','Phố Tây Nha Trang','Bãi biển (~0.6 km), Chợ Đầm (~1.8 km), Bún chả cá (~0.4 km)']),
+   H(['nt-h3','Vinhomes / Vinpearl Condotel Beachfront','vinhomes','1.100.000đ - 2.000.000đ/đêm','Căn hộ khách sạn mặt tiền biển Trần Phú, tiện ích đầy đủ cho gia đình.','Vinpearl Beachfront Nha Trang','Bãi biển (~0.1 km), Tháp Bà Ponagar (~3.8 km)']),
+   H(['nt-h4','Nhà nghỉ Biển Xanh Nha Trang','nhanghi','250.000đ - 400.000đ/đêm','Nhà nghỉ sạch sẽ gần đường Trần Phú, đi bộ ra biển 5 phút.','Trần Phú, Nha Trang','Bãi biển (~0.3 km), Tháp Trầm Hương (~0.7 km)'])
+  ]},
+ dl:{name:'Đà Lạt',sn:'Đà Lạt',reg:'Miền Trung',code:'DLI',apt:'Liên Khương (DLI)',rail:null,near:'Nha Trang hoặc Sài Gòn, rồi đi xe lên Đà Lạt',rain:[5,6,7,8,9,10],cold:[12,1,2],
+  drive:'Sân bay Liên Khương cách trung tâm Đà Lạt khoảng 30 km.',
+  tmp:{r:'15–24°C, mát, mưa chiều',c:'8–20°C, lạnh, sương',d:'14–26°C, mát, khô'},
+  wstat:{r:{t:'19°C',p:'70% mưa chiều, 30% nắng'},c:{t:'15°C',p:'15% mưa/sương, 85% nắng lạnh'},d:{t:'20°C',p:'10% mưa, 90% nắng đẹp'}},
+  places:[
+   P(['dl-p1','Hồ Xuân Hương và Quảng trường Lâm Viên','photo,family','out','122',0,'Đi dạo quanh hồ, đạp xe đạp đôi hoặc ngồi cà phê ven hồ.','Miễn phí','Cả ngày','Bằng phẳng, hợp bé nhỏ.']),
+   P(['dl-p2','Dinh Bảo Đại (Dinh III)','in,heritage','in','222',5,'Dinh thự của vua Bảo Đại với nội thất giữ nguyên, có mái che.',null,null,'Hợp ngày mưa.']),
+   P(['dl-p3','Ga Đà Lạt','heritage,photo,family','in','222',3,'Ga cổ kiểu Art Deco, có thể đi tàu cổ đến Trại Mát.','Xem giá vé tàu tại ga','Kiểm tra giờ tàu','Bé thích đi tàu.']),
+   P(['dl-p4','Thiền viện Trúc Lâm và cáp treo','heritage,nature,photo','out','122',4,'Thiền viện giữa rừng thông, đi cáp treo ngắm đồi.',null,null,'Nhiều gió, mang áo khoác.']),
+   P(['dl-p5','Núi Lang Biang','nature,photo','out','122',6,'Núi cao nhất vùng, có xe jeep hoặc đường đi bộ lên đỉnh.',null,null,'Đường dốc, bé nhỏ nên đi xe.']),
+   P(['dl-p6','Chợ Đà Lạt và chợ đêm','in,family','in','222',0,'Dâu tây, mứt, atiso, đồ len và quà vặt.','Vào cửa miễn phí','Sáng đến tối','Đông, nên giữ tay bé.']),
+   P(['dl-p7','Đồi chè Cầu Đất','nature,photo','out','112',0,'Đồi chè rộng, nhiều góc chụp ảnh, nên đi sáng sớm.',null,null,'Có thể sương mù và lạnh.'])
+  ],
+  foods:[
+   F(['dl-f1','Bánh tráng nướng','van','222',3,0,'Bánh tráng nướng than với trứng, hành, xúc xích.','15.000–30.000đ','bánh tráng nướng']),
+   F(['dl-f2','Lẩu gà lá é','toi','222',3,0,'Gà nấu với lá é thơm, ăn nóng khi trời lạnh.','200.000–350.000đ/nồi','lẩu gà lá é']),
+   F(['dl-f3','Bánh mì xíu mại','sang','222',2,0,'Bánh mì ăn với xíu mại sốt cà chua nóng.','25.000–45.000đ','bánh mì xíu mại']),
+   F(['dl-f4','Bánh ướt lòng gà','sang,trua','222',3,0,'Bánh ướt mềm ăn với lòng gà và rau thơm.','30.000–50.000đ','bánh ướt lòng gà']),
+   F(['dl-f5','Dâu tây và mứt Đà Lạt','van','112',2,0,'Mua ở chợ hoặc vườn dâu, mang về làm quà.','Xem giá tại nơi bán','dâu tây Đà Lạt'])
+  ],
+  hotels:[
+   H(['dl-h1','Dalat Palace Heritage Hotel','hotel','2.800.000đ - 5.500.000đ/đêm','Khách sạn di sản kiến trúc Pháp lịch sử ngay trung tâm thành phố hoa.','Dalat Palace Hotel','Hồ Xuân Hương (~0.2 km), Chợ Đà Lạt (~0.6 km), Bánh tráng nướng (~0.5 km)']),
+   H(['dl-h2','Yên’s House Đà Lạt','homestay','400.000đ - 700.000đ/đêm','Homestay góc nhỏ bình yên, nhiều hoa và view thung lũng.','Đường 3 Tháng 4, Đà Lạt','Quảng trường Lâm Viên (~1.5 km), Lẩu gà lá é Tao Ngộ (~0.4 km)']),
+   H(['dl-h3','Nhà nghỉ Trung tâm Chợ Đà Lạt','nhanghi','250.000đ - 400.000đ/đêm','Nhà nghỉ sạch sẽ, đi bộ vài bước ra chợ đêm Đà Lạt.','Khu Hòa Bình, Đà Lạt','Chợ đêm Đà Lạt (~0.1 km), Hồ Xuân Hương (~0.4 km)'])
+  ]},
+ hcm:{name:'TP. Hồ Chí Minh',sn:'TP. Hồ Chí Minh',reg:'Miền Nam',code:'SGN',apt:'Tân Sơn Nhất (SGN)',rail:'Sài Gòn',rain:[5,6,7,8,9,10,11],cold:[],
+  tmp:{r:'25–33°C, nóng ẩm, mưa chiều',c:'25–33°C',d:'25–36°C, nóng khô'},
+  wstat:{r:{t:'29°C',p:'65% mưa rào chiều, 35% nắng'},c:{t:'29°C',p:'15% mưa, 85% nắng đẹp'},d:{t:'31°C',p:'10% mưa, 90% nắng nóng'}},
+  places:[
+   P(['hcm-p1','Dinh Độc Lập','heritage','in','222',6,'Nơi diễn ra sự kiện 30/4/1975, có hầm chỉ huy và nội thất thập niên 1960.',null,null,'Có điều hòa, hợp giờ trưa nóng.']),
+   P(['hcm-p2','Nhà thờ Đức Bà và Bưu điện Trung tâm','heritage,photo','out','122',0,'Hai công trình kiến trúc Pháp cạnh nhau ở trung tâm.','Miễn phí tham quan bên ngoài','Cả ngày','Bằng phẳng, đẩy xe được.']),
+   P(['hcm-p3','Chợ Bến Thành','in,family','in','222',0,'Chợ lớn nhất thành phố, mua quà và ăn vặt.','Vào cửa miễn phí','Sáng đến chiều','Đông và nóng, nên giữ tay bé.']),
+   P(['hcm-p4','Phố đi bộ Nguyễn Huệ','photo,family','out','122',0,'Quảng trường dài, nhiều sự kiện, đông vào buổi tối.','Miễn phí','Cả ngày','Bé thích chạy chơi, cần để ý bé.']),
+   P(['hcm-p5','Bảo tàng Chứng tích Chiến tranh','in,heritage','in','222',12,'Trưng bày về chiến tranh, có hình ảnh nặng nề.',null,null,'Không hợp bé nhỏ.']),
+   P(['hcm-p6','Thảo Cầm Viên Sài Gòn','nature,family','out','122',2,'Vườn thú và vườn thực vật lâu đời, nhiều bóng cây.',null,'Cả ngày','Bé thích xem thú.']),
+   P(['hcm-p7','Địa đạo Củ Chi','heritage,nature','out','112',7,'Hệ thống địa đạo cách trung tâm khoảng 70 km, nên đi nửa ngày.',null,null,'Có đoạn chui hầm, bé nhỏ khó đi.'])
+  ],
+  foods:[
+   F(['hcm-f1','Cơm tấm sườn','sang,trua','222',2,0,'Cơm tấm với sườn nướng, bì, chả và trứng.','45.000–70.000đ','cơm tấm']),
+   F(['hcm-f2','Hủ tiếu Nam Vang','sang,trua','222',2,0,'Nước trong ngọt, có tôm, thịt và gan, ăn khô hoặc nước.','45.000–70.000đ','hủ tiếu Nam Vang']),
+   F(['hcm-f3','Bánh mì','sang,van','222',2,0,'Bánh mì thịt, pate và rau, ăn nhanh.','20.000–40.000đ','bánh mì']),
+   F(['hcm-f4','Ốc','toi','221',6,1,'Ốc xào, nướng, hấp; có nhiều loại nước chấm cay.','150.000–300.000đ/người','quán ốc']),
+   F(['hcm-f5','Chè và tàu hũ','van','222',2,0,'Món ngọt giải nhiệt, ăn lạnh.','15.000–30.000đ','chè'])
+  ],
+  hotels:[
+   H(['hcm-h1','The Reverie Saigon','hotel','3.500.000đ - 7.500.000đ/đêm','Khách sạn siêu sang trọng bậc nhất trung tâm Quận 1.','The Reverie Saigon','Phố đi bộ Nguyễn Huệ (~0.1 km), Nhà thờ Đức Bà (~0.8 km), Chợ Bến Thành (~0.7 km)']),
+   H(['hcm-h2','Vinhomes Central Park Luxury Apartment','vinhomes','1.000.000đ - 2.200.000đ/đêm','Căn hộ cao cấp cạnh công viên ven sông lớn nhất thành phố và tòa Landmark 81.','Vinhomes Central Park Bình Thạnh','Thảo Cầm Viên (~1.8 km), Trung tâm Quận 1 (~3.0 km), Khu ẩm thực Bình Thạnh (~0.5 km)']),
+   H(['hcm-h3','Saigon Hub Hostel & Homestay','homestay','250.000đ - 500.000đ/đêm','Homestay sạch sẽ, vị trí trung tâm Quận 1 tiện lợi di chuyển.','Bến Thành, Quận 1','Chợ Bến Thành (~0.3 km), Dinh Độc Lập (~0.8 km), Cơm tấm (~0.2 km)']),
+   H(['hcm-h4','Nhà nghỉ Bùi Viện / Phạm Ngũ Lão','nhanghi','250.000đ - 400.000đ/đêm','Nhà nghỉ giá rẻ trung tâm khu phố Tây.','Phạm Ngũ Lão, Quận 1','Chợ Bến Thành (~0.7 km), Phố đi bộ Nguyễn Huệ (~1.2 km)'])
+  ]},
+ pq:{name:'Phú Quốc',sn:'Phú Quốc',reg:'Miền Nam',code:'PQC',apt:'Phú Quốc (PQC)',rail:null,rain:[5,6,7,8,9,10],cold:[],
+  drive:'Sân bay Phú Quốc cách thị trấn Dương Đông khoảng 10 km.',
+  tmp:{r:'25–31°C, mưa rào, biển động',c:'25–31°C',d:'26–33°C, nắng đẹp'},
+  wstat:{r:{t:'28°C',p:'70% mưa rào, 30% nắng'},c:{t:'28°C',p:'15% mưa, 85% nắng đẹp'},d:{t:'30°C',p:'10% mưa, 90% nắng đẹp'}},
+  places:[
+   P(['pq-p1','Bãi Sao','nature,family','out','022',3,'Bãi cát trắng mịn, nước trong, hợp tắm biển.','Miễn phí','Cả ngày','Chỉ tắm khi biển lặng.']),
+   P(['pq-p2','Lặn ngắm san hô, tour bốn đảo','nature,family','out','022',5,'Đi ca nô hoặc tàu thăm Hòn Móng Tay, Hòn Gầm Ghì và lặn ngắm san hô.','Xem giá theo tour','Tour cả ngày','Bé phải mặc áo phao; mùa mưa dễ bị hủy.']),
+   P(['pq-p3','Hòn Thơm (cáp treo)','nature,family','out','122',4,'Cáp treo vượt biển dài, có khu vui chơi và bãi biển phía bên kia.','Xem giá tại nơi bán vé','Kiểm tra giờ chạy cáp treo','Cáp treo có thể ngừng khi gió lớn.']),
+   P(['pq-p4','Chợ đêm Dương Đông','family','out','122',0,'Hải sản, quà vặt và đồ lưu niệm buổi tối.','Vào cửa miễn phí','Buổi tối','Đông, nên giữ tay bé.']),
+   P(['pq-p5','Dinh Cậu','heritage,photo','out','122',0,'Miếu nhỏ trên mỏm đá ven biển, đẹp lúc hoàng hôn.','Miễn phí','Cả ngày','Có bậc đá.']),
+   P(['pq-p6','Cơ sở nước mắm và vườn tiêu','heritage,family','in','222',0,'Tham quan nơi làm nước mắm và trồng tiêu, mua quà đặc sản.',null,null,'Ít đi bộ, hợp ngày mưa.'])
+  ],
+  foods:[
+   F(['pq-f1','Bún quậy','sang','222',3,0,'Sợi bún tươi, chả cá và sốt chấm tự pha.','45.000–70.000đ','bún quậy']),
+   F(['pq-f2','Gỏi cá trích','trua,toi','222',12,0,'Cá sống trộn dừa và rau, bé nhỏ không nên ăn.','100.000–180.000đ','gỏi cá trích']),
+   F(['pq-f3','Ghẹ Hàm Ninh','toi','222',3,0,'Ghẹ hấp hoặc luộc, giá theo ký, hỏi giá trước.','Giá theo ký','ghẹ Hàm Ninh']),
+   F(['pq-f4','Bún kèn','sang,trua','222',2,0,'Bún nước cá có nước cốt dừa, vị béo thanh.','40.000–60.000đ','bún kèn'])
+  ],
+  hotels:[
+   H(['pq-h1','JW Marriott Phu Quoc Emerald Bay Resort','hotel','5.000.000đ - 10.000.000đ/đêm','Khu nghỉ dưỡng 5 sao thiết kế đẳng cấp quốc tế tại Bãi Khem.','JW Marriott Phu Quoc','Bãi Sao (~2.5 km), Cáp treo Hòn Thơm (~5.0 km)']),
+   H(['pq-h2','Banana Homestay Phú Quốc','homestay','400.000đ - 700.000đ/đêm','Homestay gần gũi thiên nhiên, có vườn cây thoáng mát tại Dương Đông.','Dương Đông, Phú Quốc','Chợ đêm Dương Đông (~1.2 km), Dinh Cậu (~1.5 km), Bún quậy Kiến Xây (~1.0 km)']),
+   H(['pq-h3','Vinholidays Fiesta / Grand World Condotel','vinhomes','900.000đ - 1.800.000đ/đêm','Tổ hợp căn hộ khách sạn nằm trong quần thể Grand World sôi động phía Bắc đảo.','Vinholidays Fiesta Phú Quốc','Grand World (~0.1 km), VinWonders (~1.5 km)']),
+   H(['pq-h4','Nhà nghỉ Dương Đông Phú Quốc','nhanghi','250.000đ - 400.000đ/đêm','Nhà nghỉ bình dân gần trung tâm thị trấn Dương Đông.','Dương Đông, Phú Quốc','Chợ đêm Dương Đông (~0.8 km), Dinh Cậu (~1.0 km)'])
+  ]},
+ ct:{name:'Cần Thơ',sn:'Cần Thơ',reg:'Miền Nam',code:'VCA',apt:'Cần Thơ (VCA)',rail:null,near:'Sài Gòn, rồi đi xe xuống Cần Thơ',rain:[5,6,7,8,9,10,11],cold:[],
+  tmp:{r:'25–32°C, mưa chiều, nước lên',c:'24–32°C',d:'24–35°C, nắng nóng'},
+  wstat:{r:{t:'29°C',p:'65% mưa rào chiều, 35% nắng'},c:{t:'28°C',p:'15% mưa, 85% nắng đẹp'},d:{t:'30°C',p:'10% mưa, 90% nắng đẹp'}},
+  places:[
+   P(['ct-p1','Chợ nổi Cái Răng','heritage,photo,family','out','122',4,'Đi thuyền sáng sớm, mua trái cây và ăn hủ tiếu ngay trên ghe.','Giá theo thuyền, hỏi trước','Sáng sớm','Bé phải mặc áo phao.']),
+   P(['ct-p2','Bến Ninh Kiều và chợ đêm','photo,family','out','122',0,'Đi dạo bờ sông Hậu, ăn vặt và ngắm cầu Cần Thơ.','Miễn phí','Từ chiều tối','Bằng phẳng, đẩy xe được.']),
+   P(['ct-p3','Nhà cổ Bình Thủy','heritage,photo','in','222',5,'Ngôi nhà cổ kiểu Pháp – Việt, có mái che.',null,null,'Hợp ngày mưa.']),
+   P(['ct-p4','Vườn trái cây miệt vườn','nature,family','out','122',2,'Đi xuồng, hái và ăn trái cây theo mùa.','Xem giá tại vườn','Cả ngày','Bé thích hái trái.']),
+   P(['ct-p5','Cồn Sơn','nature,family','out','112',4,'Cù lao giữa sông Hậu, có thể đi xe đạp và ăn món địa phương.',null,null,'Cần đi thuyền sang.'])
+  ],
+  foods:[
+   F(['ct-f1','Bánh xèo','trua,toi','222',3,0,'Bánh giòn nhân tôm thịt, cuốn rau rừng.','50.000–100.000đ','bánh xèo']),
+   F(['ct-f2','Hủ tiếu trên ghe','sang','222',2,0,'Ăn sáng ở chợ nổi, nước dùng ngọt.','40.000–60.000đ','hủ tiếu']),
+   F(['ct-f3','Lẩu mắm','toi','122',8,1,'Nước lẩu mắm đậm đà, nhiều rau và cá.','200.000–350.000đ/nồi','lẩu mắm']),
+   F(['ct-f4','Bánh cống','van','222',2,0,'Bánh chiên giòn nhân đậu xanh và tôm.','25.000–45.000đ','bánh cống'])
+  ],
+  hotels:[
+   H(['ct-h1','Azerai Can Tho','hotel','3.500.000đ - 7.000.000đ/đêm','Resort cao cấp nằm biệt lập trên Cồn Ấu, không gian yên bình tuyệt đối.','Azerai Can Tho','Bến Ninh Kiều (~1.5 km), Chợ nổi Cái Răng (~5.0 km)']),
+   H(['ct-h2','Winter Spring Homestay Cần Thơ','homestay','300.000đ - 600.000đ/đêm','Homestay thiết kế trẻ trung, gần bến Ninh Kiều.','Cái Khế, Cần Thơ','Bến Ninh Kiều (~0.8 km), Bánh xèo Mười Xiềm (~1.2 km)']),
+   H(['ct-h3','Nhà nghỉ Ninh Kiều Cần Thơ','nhanghi','250.000đ - 400.000đ/đêm','Nhà nghỉ bình dân gần bến Ninh Kiều, thuận tiện bắt tàu ra chợ nổi.','Ninh Kiều, Cần Thơ','Bến Ninh Kiều (~0.4 km), Chợ đêm Cần Thơ (~0.5 km)'])
+  ]}
+};
+
+const EXTRA_PLACES = {
+  'Miền Bắc': [
+    ['nb','Ninh Bình (Tràng An - Tam Cốc)','Ninh Bình','HAN','Nội Bài (HAN)','Ninh Bình','Tràng An, Hang Múa, Tam Cốc - Bích Động, Chùa Bái Đính, Cố đô Hoa Lư','Cơm cháy Ninh Bình, Dê núi, Miến lươn'],
+    ['hg','Hà Giang (Đồng Văn - Mã Pí Lèng)','Hà Giang','HAN','Nội Bài (HAN)',null,'Đèo Mã Pí Lèng, Sông Nho Quế, Cột cờ Lũng Cú, Phố cổ Đồng Văn','Cháo ấu tẩu, Thắng dền, Thịt trâu gác bếp'],
+    ['cb','Cao Bằng (Thác Bản Giốc)','Cao Bằng','HAN','Nội Bài (HAN)',null,'Thác Bản Giốc, Động Ngườm Ngao, Khu di tích Pác Bó, Hồ Thang Hen','Bánh cuốn Cao Bằng, Vịt quay 7 vị, Hạt dẻ Trùng Khánh'],
+    ['mc','Mộc Châu (Sơn La)','Mộc Châu','HAN','Nội Bài (HAN)',null,'Đồi chè Trái Tim, Rừng thông Bản Áng, Thác Dải Yếm, Cầu kính Bạch Long','Bê chao, Cá suối nướng, Sữa tươi Mộc Châu'],
+    ['hp','Hải Phòng (Cát Bà - Đồ Sơn)','Hải Phòng','HPH','Cát Bi (HPH)','Hải Phòng','Đảo Cát Bà, Vịnh Lan Hạ, Bãi biển Đồ Sơn, Nhà hát lớn Hải Phòng','Bánh đa cua, Nem cua bể, Bánh mì que'],
+    ['hb','Hòa Bình (Mai Châu - Pù Luông)','Hòa Bình','HAN','Nội Bài (HAN)',null,'Thung lũng Mai Châu, Bản Lác, Đèo Đá Trắng, Suối khoáng Kim Bôi','Cơm lam, Thịt lợn mán nướng, Cá suối'],
+    ['tb','Tam Đảo (Vĩnh Phúc)','Tam Đảo','HAN','Nội Bài (HAN)','Vĩnh Yên','Nhà thờ đá Tam Đảo, Cầu Mây, Thác Bạc, Thiền viện Trúc Lâm Tây Thiên','Ngọn su su xào tỏi, Gà đồi nướng'],
+    ['lc','Lào Cai','Lào Cai','HAN','Nội Bài (HAN)','Lào Cai','Cửa khẩu Lào Cai, Đền Thượng, Chợ Cốc Lếu, Bắc Hà','Phở chua Bắc Hà, Thắng cố, Mận Tam Hoa'],
+    ['db','Điện Biên','Điện Biên','DIN','Điện Biên Phủ (DIN)',null,'Đồi A1, Bảo tàng Chiến thắng Điện Biên Phủ, Hầm Đờ Cát, Đèo Pha Đin','Xôi nếp nương, Gà nướng mắc khén, Pa pỉnh tộp'],
+    ['lc2','Lai Châu','Lai Châu','DIN','Điện Biên Phủ (DIN)',null,'Đèo Ô Quy Hồ, Cầu kính Rồng Mây, Cao nguyên Sìn Hồ','Lợn cắp nách, Cá bống vùi tro, Xôi tím'],
+    ['yb','Yên Bái (Mù Cang Chải)','Mù Cang Chải','HAN','Nội Bài (HAN)','Yên Bái','Ruộng bậc thang Mù Cang Chải, Đèo Khau Phạ, Suối Giàng','Xôi nếp Tú Lệ, Cốm Tú Lệ, Châu chấu rang'],
+    ['tq','Tuyên Quang','Tuyên Quang','HAN','Nội Bài (HAN)',null,'Khu di tích Tân Trào, Thác Mơ Na Hang, Suối khoáng Mỹ Lâm','Bánh gai Chiêm Hóa, Cam sành Hàm Yên'],
+    ['bk','Bắc Kạn (Hồ Ba Bể)','Hồ Ba Bể','HAN','Nội Bài (HAN)',null,'Vườn quốc gia Ba Bể, Động Puông, Thác Đầu Đẳng','Cá nướng hồ Ba Bể, Tôm chua, Bánh coóc mò'],
+    ['tn','Thái Nguyên','Thái Nguyên','HAN','Nội Bài (HAN)','Thái Nguyên','Hồ Núi Cốc, Đồi chè Tân Cương, Bảo tàng Văn hóa các dân tộc','Cơm lam Định Hóa, Bánh chưng Bờ Đậu'],
+    ['ls','Lạng Sơn','Lạng Sơn','HAN','Nội Bài (HAN)','Lạng Sơn','Đỉnh Mẫu Sơn, Động Tam Thanh, Thành nhà Mạc, Chợ Đông Kinh','Vịt quay Lạng Sơn, Khâu nhục, Phở chua'],
+    ['bg','Bắc Giang','Bắc Giang','HAN','Nội Bài (HAN)','Bắc Giang','Tây Yên Tử, Hồ Cấm Sơn, Làng cổ Thổ Hà','Bánh đa Kế, Mì Chũ, Vải thiều Lục Ngạn'],
+    ['pt','Phú Thọ','Phú Thọ','HAN','Nội Bài (HAN)','Việt Trì','Khu di tích Đền Hùng, Đồi chè Long Cốc, Suối khoáng Thanh Thủy','Thịt chua Thanh Sơn, Bánh tai, Cá lăng Việt Trì'],
+    ['bn','Bắc Ninh','Bắc Ninh','HAN','Nội Bài (HAN)','Bắc Ninh','Chùa Dâu, Chùa Bút Tháp, Làng tranh Đông Hồ, Đền Đô','Bánh phu thê Đình Bảng, Nem Bùi, Bánh khúc'],
+    ['hd','Hải Dương','Hải Dương','HPH','Cát Bi (HPH)','Hải Dương','Côn Sơn - Kiếp Bạc, Đảo Cò Chi Lăng Nam','Bánh đậu xanh, Bánh gai Ninh Giang, Rươi Tứ Kỳ'],
+    ['hy','Hưng Yên','Hưng Yên','HAN','Nội Bài (HAN)',null,'Phố Hiến, Làng hương Cao Thôn, Ecopark','Bún thang lươn, Nhãn lồng Hưng Yên, Gà Đông Tảo'],
+    ['hna','Hà Nam','Hà Nam','HAN','Nội Bài (HAN)','Phủ Lý','Chùa Tam Chúc, Chùa Địa Tạng Phi Lai Tự, Làng Vũ Đại','Cá kho làng Vũ Đại, Bánh cuốn Phủ Lý'],
+    ['nd','Nam Định','Nam Định','HAN','Nội Bài (HAN)','Nam Định','Nhà thờ đổ Hải Lý, Quần thể Phủ Dầy, Biển Thịnh Long','Phở bò Nam Định, Bánh nhãn Hải Hậu, Nem nắm Giao Thủy'],
+    ['tb2','Thái Bình','Thái Bình','HPH','Cát Bi (HPH)',null,'Biển Vô Cực Quang Lang, Chùa Keo, Cồn Vành','Bánh cáy làng Nguyễn, Canh cá Quỳnh Côi']
+  ],
+  'Miền Trung': [
+    ['qb','Quảng Bình (Phong Nha - Kẻ Bàng)','Phong Nha','VDH','Đồng Hới (VDH)','Đồng Hới','Động Phong Nha, Động Thiên Đường, Hang Sơn Đoòng, Suối Nước Moọc, Biển Nhật Lệ','Cháo canh Quảng Bình, Bánh bột lọc, Khoai deo'],
+    ['qn2','Quy Nhơn (Bình Định)','Quy Nhơn','UIH','Phù Cát (UIH)','Diêu Trì','Kỳ Co - Eo Gió, Ghềnh Ráng Tiên Sa, Tháp Đôi, Cù Lao Xanh','Bánh hỏi cháo lòng, Bún chả cá Quy Nhơn, Bánh xèo tôm nhảy'],
+    ['py','Phú Yên (Tuy Hòa)','Phú Yên','TBB','Tuy Hòa (TBB)','Tuy Hòa','Ghềnh Đá Đĩa, Bãi Xép, Mũi Điện, Tháp Nhạn','Mắt cá ngừ đại dương, Cơm gà Phú Yên, Bánh canh hẹ'],
+    ['bt','Mũi Né - Phan Thiết (Bình Thuận)','Phan Thiết','SGN','Tân Sơn Nhất (SGN)','Phan Thiết','Đồi cát bay Mũi Né, Bàu Trắng, Suối Tiên, Làng chài Mũi Né, Đảo Phú Quý','Bánh căn, Lẩu thả, Gỏi cá mai, Bánh quai vạc'],
+    ['nt2','Ninh Thuận (Vĩnh Hy)','Ninh Thuận','CXR','Cam Ranh (CXR)','Tháp Chàm','Vịnh Vĩnh Hy, Hang Rái, Đồi cát Nam Cương, Tháp Po Klong Garai','Cơm gà Phan Rang, Bánh căn, Thịt cừu nướng'],
+    ['th','Thanh Hóa (Sầm Sơn - Pù Luông)','Thanh Hóa','THD','Thọ Xuân (THD)','Thanh Hóa','Biển Sầm Sơn, Khu bảo tồn Pù Luông, Thành nhà Hồ, Suối cá thần Cẩm Lương','Nem chua Thanh Hóa, Bánh cuốn tôm, Chả tôm'],
+    ['na','Nghệ An (Cửa Lò)','Nghệ An','VII','Vinh (VII)','Vinh','Biển Cửa Lò, Làng Sen quê Bác, Đồi chè Thanh Chương, Vườn quốc gia Pù Mát','Cháo lươn Vinh, Bánh mướt, Nhút Thanh Chương'],
+    ['ht','Hà Tĩnh','Hà Tĩnh','VII','Vinh (VII)','Hương Phố','Biển Thiên Cầm, Ngã ba Đồng Lộc, Chùa Hương Tích','Kẹo cu đơ, Gỏi cá đục, Bánh bèo Hà Tĩnh'],
+    ['qt','Quảng Trị','Quảng Trị','HUI','Phú Bài (HUI)','Đông Hà','Thành cổ Quảng Trị, Địa đạo Vịnh Mốc, Đảo Cồn Cỏ, Cầu Hiền Lương','Bún hến Mai Xá, Cháo bột, Bánh ướt Phương Lang'],
+    ['qng','Quảng Ngãi (Đảo Lý Sơn)','Lý Sơn','VCL','Chu Lai (VCL)','Quảng Ngãi','Đảo Lý Sơn, Cổng Tò Vò, Hang Câu, Biển Mỹ Khê Quảng Ngãi','Gỏi tỏi Lý Sơn, Don Quảng Ngãi, Ram bắp'],
+    ['kt','Kon Tum (Măng Đen)','Măng Đen','PXU','Pleiku (PXU)',null,'Khu du lịch Măng Đen, Thác Pa Sỹ, Nhà thờ gỗ Kon Tum, Cầu treo Kon Klor','Gà nướng cơm lam Măng Đen, Gỏi lá, Cá tầm'],
+    ['gl','Gia Lai (Pleiku)','Pleiku','PXU','Pleiku (PXU)',null,'Biển Hồ T’Nưng, Hàng thông trăm tuổi, Chùa Minh Thành, Thác Phú Cường','Phở khô Gia Lai, Bún mắm cua, Gà nướng'],
+    ['dl2','Đắk Lắk (Buôn Ma Thuột)','Buôn Ma Thuột','BMV','Buôn Ma Thuột (BMV)',null,'Bảo tàng Thế giới Cà phê, Cụm thác Dray Nur - Dray Sáp, Hồ Lắk, Buôn Đôn','Bún đỏ, Gà nướng Bản Đôn, Cà phê Buôn Ma Thuột'],
+    ['dno','Đắk Nông (Tà Đùng)','Đắk Nông','BMV','Buôn Ma Thuột (BMV)',null,'Hồ Tà Đùng (Vịnh Hạ Long Tây Nguyên), Hang động núi lửa Chư Bluk','Cơm lam, Cá lăng sông Sêrêpốk, Bơ sáp']
+  ],
+  'Miền Nam': [
+    ['vt','Vũng Tàu - Côn Đảo (Bà Rịa - Vũng Tàu)','Vũng Tàu','VCS','Côn Đảo (VCS) / SGN',null,'Bãi Sau Vũng Tàu, Tượng Chúa Kitô, Hồ Tràm, Đảo Côn Đảo, Bãi Đầm Trầu','Bánh khọt Vũng Tàu, Lẩu cá đuối, Hải sản'],
+    ['ag','An Giang (Châu Đốc - Rừng Tràm Trà Sư)','An Giang','VCA','Cần Thơ (VCA)',null,'Rừng tràm Trà Sư, Miếu Bà Chúa Xứ Núi Sam, Hồ Tà Pạ, Thất Sơn','Bún cá Châu Đốc, Lẩu mắm, Thốt nốt'],
+    ['dt','Đồng Tháp (Sa Đéc)','Đồng Tháp','VCA','Cần Thơ (VCA)',null,'Làng hoa Sa Đéc, Vườn quốc gia Tràm Chim, Khu di tích Xẻo Quýt, Nhà cổ Huỳnh Thủy Lê','Hủ tiếu Sa Đéc, Cá lóc nướng trui cuốn lá sen'],
+    ['btre','Bến Tre','Bến Tre','SGN','Tân Sơn Nhất (SGN)',null,'Cồn Phụng, Cồn Quy, Sân chim Vàm Hồ, Làng du kích Đồng Khởi','Cơm dừa Bến Tre, Chuột dừa nướng, Kẹo dừa'],
+    ['tg','Tiền Giang (Mỹ Tho)','Tiền Giang','SGN','Tân Sơn Nhất (SGN)',null,'Cù lao Thới Sơn, Chợ nổi Cái Bè, Chùa Vĩnh Tràng, Trại rắn Đồng Tâm','Hủ tiếu Mỹ Tho, Cháo cá lóc rau đắng'],
+    ['vl','Vĩnh Long','Vĩnh Long','VCA','Cần Thơ (VCA)',null,'Cù lao An Bình, Lò gạch Mang Thít, Chùa Phật Ngọc Xá Lợi','Cá tai tượng chiên xù, Bánh xèo hến'],
+    ['tv','Trà Vinh','Trà Vinh','VCA','Cần Thơ (VCA)',null,'Ao Bà Om, Chùa Âng, Biển Ba Động, Cù lao Tân Quy','Bún nước lèo Trà Vinh, Bánh tét Trà Cuôn'],
+    ['st','Sóc Trăng','Sóc Trăng','VCA','Cần Thơ (VCA)',null,'Chùa Dơi, Chùa Som Rong, Chợ nổi Ngã Năm','Bún nước lèo Sóc Trăng, Bánh pía'],
+    ['bl','Bạc Liêu','Bạc Liêu','CAH','Cà Mau (CAH)',null,'Nhà Công tử Bạc Liêu, Cánh đồng điện gió, Chùa Xiêm Cán','Bánh tằm Ngan Dừa, Lẩu mắm Bạc Liêu'],
+    ['cm','Cà Mau (Đất Mũi)','Cà Mau','CAH','Cà Mau (CAH)',null,'Mũi Cà Mau, Rừng U Minh Hạ, Chợ nổi Cà Mau, Hòn Đá Bạc','Cua Cà Mau, Lẩu mắm U Minh, Ba khía Rạch Gốc'],
+    ['hg2','Hậu Giang','Hậu Giang','VCA','Cần Thơ (VCA)',null,'Chợ nổi Ngã Bảy, Khu bảo tồn Lung Ngọc Hoàng','Cháo lòng Cái Tắc, Cá thác lác'],
+    ['tn2','Tây Ninh (Núi Bà Đen)','Tây Ninh','SGN','Tân Sơn Nhất (SGN)',null,'Núi Bà Đen (cáp treo), Tòa Thánh Tây Ninh, Hồ Dầu Tiếng','Bánh tráng phơi sương Trảng Bàng, Bánh canh Trảng Bàng, Muối tôm'],
+    ['dnai','Đồng Nai','Đồng Nai','SGN','Tân Sơn Nhất (SGN)','Biên Hòa','Vườn quốc gia Cát Tiên, Thác Giang Điền, Làng bưởi Tân Triều','Gỏi bưởi Tân Triều, Cơm gà cá mặn'],
+    ['bd','Bình Dương','Bình Dương','SGN','Tân Sơn Nhất (SGN)','Dĩ An','Khu du lịch Đại Nam, Chùa Hội Khánh, Làng gốm Lái Thiêu','Bánh bèo bì, Gỏi gà măng cụt'],
+    ['bp','Bình Phước','Bình Phước','SGN','Tân Sơn Nhất (SGN)',null,'Vườn quốc gia Bù Gia Mập, Trảng cỏ Bù Lạch, Núi Bà Rá','Hạt điều rang muối, Đọt mây nướng'],
+    ['la','Long An','Long An','SGN','Tân Sơn Nhất (SGN)','Tân An','Làng nổi Tân Lập, Khu du lịch Cánh đồng Bất tận','Lẩu mắm Long An, Bánh tét Đức Hòa']
+  ]
+};
+
+Object.entries(EXTRA_PLACES).forEach(([reg, list]) => {
+  const isNorth = reg === 'Miền Bắc';
+  const isCentral = reg === 'Miền Trung';
+  list.forEach(([key, name, sn, code, apt, rail, placesStr, foodsStr]) => {
+    const rain = isNorth ? [5,6,7,8,9] : (isCentral ? [9,10,11,12] : [5,6,7,8,9,10,11]);
+    const cold = isNorth ? [12,1,2] : (isCentral ? [1,2] : []);
+    const tmp = isNorth
+      ? {r:'25–34°C, mưa rào mùa hạ', c:'11–19°C, lạnh, khô hoặc mưa phùn', d:'18–29°C, mát mẻ, dễ chịu'}
+      : (isCentral
+        ? {r:'22–28°C, mưa nhiều', c:'18–24°C, se lạnh', d:'25–35°C, nắng đẹp'}
+        : {r:'25–32°C, mưa rào chiều', c:'24–32°C, nắng ấm', d:'25–35°C, nắng ráo'});
+    const wstat = isNorth
+      ? {r:{t:'29°C',p:'65% mưa rào, 35% nắng'}, c:{t:'16°C',p:'25% mưa phùn, 75% se lạnh'}, d:{t:'24°C',p:'10% mưa, 90% nắng đẹp'}}
+      : (isCentral
+        ? {r:{t:'25°C',p:'70% mưa, 30% tạnh ráo'}, c:{t:'21°C',p:'25% mưa nhẹ, 75% mát mẻ'}, d:{t:'30°C',p:'10% mưa, 90% nắng đẹp'}}
+        : {r:{t:'29°C',p:'65% mưa chiều, 35% nắng'}, c:{t:'28°C',p:'15% mưa, 85% nắng đẹp'}, d:{t:'31°C',p:'10% mưa, 90% nắng đẹp'}});
+
+    const pList = placesStr.split(',').map((s, idx) => {
+      const title = s.trim();
+      return P([key+'-p'+(idx+1), title, idx===0?'photo,family':(idx===1?'heritage,photo':'nature,photo'), 'out', '122', idx===0?0:3, 'Điểm tham quan nổi bật tại '+sn+': '+title+'.', 'Xem giá tại cổng / Miễn phí', 'Cả ngày', 'Đường đi thuận tiện, hợp gia đình.']);
+    });
+    const fList = foodsStr.split(',').map((s, idx) => {
+      const title = s.trim();
+      return F([key+'-f'+(idx+1), title, idx===0?'trua,toi':'sang,van', '222', 2, 0, 'Đặc sản nổi tiếng nhất định phải thử khi đến '+sn+'.', '35.000–120.000đ', title]);
+    });
+    const hList = [
+      H([key+'-h1', 'Khách sạn Trung tâm '+sn, 'hotel', '800.000đ - 2.000.000đ/đêm', 'Khách sạn tiêu chuẩn, vị trí trung tâm thuận tiện tham quan và ăn uống.', 'Khách sạn '+sn, pList[0].n+' (~0.8 km)']),
+      H([key+'-h2', 'Homestay & Nghỉ dưỡng '+sn, 'homestay', '350.000đ - 750.000đ/đêm', 'Homestay thiết kế ấm cúng, gần gũi thiên nhiên địa phương.', 'Homestay '+sn, (pList[1]?pList[1].n:pList[0].n)+' (~1.2 km)']),
+      H([key+'-h3', 'Nhà nghỉ Bình dân '+sn, 'nhanghi', '250.000đ - 400.000đ/đêm', 'Nhà nghỉ sạch sẽ, tiết kiệm chi phí ngay khu trung tâm.', 'Nhà nghỉ '+sn, 'Trung tâm '+sn+' (~0.5 km)'])
+    ];
+
+    DEST[key] = {
+      name, sn, reg, code, apt, rail, rain, cold, tmp, wstat,
+      places: pList, foods: fList, hotels: hList
+    };
+  });
+});
+
+const REGIONS=['Miền Bắc','Miền Trung','Miền Nam'];
+const ORIGINS={};
+Object.entries(DEST).forEach(([k,v])=>{if(!v.noOrigin)ORIGINS[k]={name:v.on||v.name,code:v.code,rail:v.rail,near:v.near}});
+ORIGINS.hp={name:'Hải Phòng',code:'HPH',rail:null,near:'Hà Nội'};
+const ORDER_O=['hn','qn','hp','hue','dn','nt','dl','hcm','pq','ct'];
+
+const MEALS={sang:'Sáng',trua:'Trưa',toi:'Tối',van:'Ăn vặt'};
+const TAGS={all:'Tất cả',in:'Trong nhà',heritage:'Di tích',nature:'Thiên nhiên',photo:'Check-in',family:'Gia đình'};
+const HOTEL_TYPES={all:'Tất cả',hotel:'Khách sạn',homestay:'Homestay',vinhomes:'Vinhomes / Căn hộ',nhanghi:'Nhà nghỉ'};
+const SEAS={r:'mùa mưa',c:'mùa lạnh',d:'mùa khô, thời tiết dễ chịu'};
+const WD=['CN','T2','T3','T4','T5','T6','T7'];
+
+const S={o:'qn',d:'hue',x:'',a:'2026-11-12',b:'2026-11-15',rt:true,ad:2,kids:[],sel:{},mode:'optimal',ptag:'all',meal:'all',htag:'all',kf:false};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ISO=/^\d{4}-\d{2}-\d{2}$/;
+
+function D(){
+  if(S.x && S.x.trim()){
+    const q = S.x.trim().toLowerCase();
+    const found = Object.entries(DEST).find(([k,v]) => v.name.toLowerCase() === q || v.sn.toLowerCase() === q || v.name.toLowerCase().includes(q));
+    if(found){
+      return Object.assign({key:found[0]}, found[1]);
+    }
+    const name = S.x.trim();
+    return {
+      key:'custom', custom:false, name: name, sn: name, reg:'Việt Nam', code:'SGN', apt: name, rail: name,
+      rain:[5,6,7,8,9,10], cold:[12,1,2],
+      tmp:{r:'25–32°C, mưa rào nhẹ', c:'18–24°C, se lạnh', d:'25–34°C, nắng đẹp'},
+      wstat:{r:{t:'28°C', p:'60% mưa rào, 40% nắng'}, c:{t:'20°C', p:'20% mưa, 80% khô ráo'}, d:{t:'30°C', p:'10% mưa, 90% nắng đẹp'}},
+      places:[
+        P(['oth-p1', 'Trung tâm và phố đi bộ ' + name, 'photo,family', 'out', '122', 0, 'Khu vực trung tâm sầm uất, các tuyến phố chính và điểm check-in đặc trưng tại ' + name + '.', 'Miễn phí', 'Cả ngày', 'Đường xá thuận tiện, dễ di chuyển.']),
+        P(['oth-p2', 'Di tích lịch sử & Văn hóa ' + name, 'heritage,photo', 'out', '122', 3, 'Điểm tham quan văn hóa, đền chùa hoặc di tích tiêu biểu tại ' + name + '.', 'Xem vé tại cổng', '8:00 - 17:00', 'Không gian thoáng mát, hợp cho gia đình.']),
+        P(['oth-p3', 'Danh thắng thiên nhiên ' + name, 'nature,photo', 'out', '112', 4, 'Cảnh quan thiên nhiên, hồ nước, núi non hoặc công viên xanh mát tại ' + name + '.', 'Miễn phí / Tùy khu vực', 'Cả ngày', 'Nên đi buổi sáng hoặc chiều mát.'])
+      ],
+      foods:[
+        F(['oth-f1', 'Đặc sản ẩm thực ' + name, 'trua,toi', '222', 3, 0, 'Món ăn truyền thống nổi tiếng mang hương vị đặc trưng của ' + name + '.', '50.000 – 150.000đ', 'Đặc sản ' + name]),
+        F(['oth-f2', 'Món ngon dân dã ' + name, 'sang,van', '222', 2, 0, 'Các món ăn vặt, bún phở hoặc bánh truyền thống buổi sáng tại ' + name + '.', '30.000 – 60.000đ', 'Quán ăn ngon ' + name])
+      ],
+      hotels:[
+        H(['oth-h1', 'Khách sạn trung tâm ' + name, 'hotel', '800.000đ - 1.800.000đ/đêm', 'Khách sạn tiện nghi sang trọng ngay trung tâm ' + name + '.', 'Khách sạn ' + name, 'Khu trung tâm (~0.5 km)']),
+        H(['oth-h2', 'Homestay & Căn hộ ' + name, 'homestay', '400.000đ - 800.000đ/đêm', 'Không gian ấm cúng, thiết kế đẹp, gần gũi với thiên nhiên tại ' + name + '.', 'Homestay ' + name, 'Gần điểm tham quan (~1.0 km)']),
+        H(['oth-h3', 'Nhà nghỉ bình dân ' + name, 'nhanghi', '250.000đ - 400.000đ/đêm', 'Nhà nghỉ sạch sẽ, giá tiết kiệm tại ' + name + '.', 'Nhà nghỉ ' + name, 'Khu vực trung tâm'])
+      ]
+    };
+  }
+  return Object.assign({key:S.d}, DEST[S.d] || DEST.hue);
+}
+function parse(iso){return new Date(iso+'T00:00:00')}
+function dm(iso){const d=parse(iso);return WD[d.getDay()]+' '+String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')}
+function dmShort(iso){const d=parse(iso);return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')}
+function ymd(iso){return iso.slice(2).replace(/-/g,'')}
+function dayList(){
+  const out=[];const a=parse(S.a),b=parse(S.b);
+  if(isNaN(a)||isNaN(b)||b<a)return [S.a];
+  for(let d=new Date(a);d<=b&&out.length<7;d.setDate(d.getDate()+1)){
+    out.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));
+  }
+  return out;
+}
+function season(){
+  const m=parse(S.a).getMonth()+1,dd=D();
+  if(dd.rain&&dd.rain.includes(m))return 'r';
+  if(dd.cold&&dd.cold.includes(m))return 'c';
+  return 'd';
+}
+function youngest(){return S.kids.length?Math.min(...S.kids):null}
+function dItems(){const dd=D();return [...(dd.places||[]),...(dd.foods||[]),...(dd.hotels||[])]}
+
+/* ---- share state ---- */
+const A32='abcdefghijklmnopqrstuvwxyz234567';
+function enc(str){const b=new TextEncoder().encode(str);let bits=0,v=0,o='';for(const x of b){v=(v<<8)|x;bits+=8;while(bits>=5){o+=A32[(v>>>(bits-5))&31];bits-=5}v&=(1<<bits)-1}if(bits>0)o+=A32[(v<<(5-bits))&31];return o}
+function dec(s){let bits=0,v=0;const out=[];for(const c of s){const i=A32.indexOf(c);if(i<0)throw new Error('bad');v=(v<<5)|i;bits+=5;if(bits>=8){out.push((v>>>(bits-8))&255);bits-=8;v&=(1<<bits)-1}}return new TextDecoder().decode(new Uint8Array(out))}
+function token(){
+  const s=Object.entries(S.sel).map(([k,v])=>k+'.'+v).join(',');
+  return enc(JSON.stringify({o:S.o,d:S.d,x:S.x,a:S.a,b:S.b,r:S.rt?1:0,n:S.ad,k:S.kids,s}));
+}
+function apply(tok){
+  const j=JSON.parse(dec(tok));
+  if(ORIGINS[j.o])S.o=j.o;
+  if(j.d==='other'||DEST[j.d])S.d=j.d;
+  S.x=String(j.x||'').replace(/[<>"&]/g,'').slice(0,40);
+  if(ISO.test(j.a))S.a=j.a;
+  if(ISO.test(j.b))S.b=j.b;
+  S.rt=!!j.r;
+  S.ad=Math.min(20,Math.max(1,parseInt(j.n)||1));
+  S.kids=(Array.isArray(j.k)?j.k:[]).map(x=>parseInt(x)).filter(x=>x>=0&&x<=17).slice(0,8);
+  const ids=new Set(dItems().map(x=>x.id));
+  S.sel={};
+  String(j.s||'').split(',').forEach(p=>{const [id,d]=p.split('.');if(ids.has(id)&&/^[0-6]$/.test(d))S.sel[id]=+d});
+}
+let lastTok='';
+function syncHash(){
+  lastTok=token();
+  try{if(location.hash!=='#t-'+lastTok)location.hash='t-'+lastTok}catch(e){}
+  $('sharelink').value=location.href.split('#')[0]+'#t-'+lastTok;
+}
+function fromHash(){
+  const m=/^#t-([a-z2-7]+)$/.exec(location.hash||'');
+  if(!m||m[1]===lastTok)return false;
+  try{apply(m[1]);return true}catch(e){return false}
+}
+
+/* ---- form ---- */
+function fillForm(){
+  $('o').innerHTML=ORDER_O.map(k=>`<option value="${k}">${ORIGINS[k].name}</option>`).join('');
+  $('d').innerHTML=REGIONS.map(r=>`<optgroup label="${r}">`+Object.entries(DEST).filter(([k,v])=>v.reg===r).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('')+`</optgroup>`).join('');
+  $('prov-list').innerHTML=Object.values(DEST).map(v=>`<option value="${v.name}">`).join('');
+  $('o').value=S.o;
+  if(DEST[S.d]) $('d').value=S.d;
+  $('dother').value=S.x;
+  $('a').value=S.a;$('b').value=S.b;$('rt').checked=S.rt;$('ad').value=S.ad;
+  $('b').disabled=!S.rt;
+}
+function drawKids(){
+  $('kidchips').innerHTML=S.kids.map((k,i)=>`<button class="chip" type="button" data-rk="${i}" aria-label="Bỏ bé ${k} tuổi">Bé ${k} tuổi ✕</button>`).join('');
+}
+function validate(){
+  const e=$('formerr');let m='';
+  if(S.rt&&parse(S.b)<parse(S.a))m='Ngày về phải sau ngày đi.';
+  else if(S.d!=='other'&&ORIGINS[S.o]&&S.o===S.d)m='Điểm xuất phát và điểm đến đang trùng nhau.';
+  e.textContent=m;e.hidden=!m;
+}
+
+/* ---- move ---- */
+function gflights(from,to,a,b){
+  const q='Flights from '+from+' to '+to+' on '+a+(S.rt?' through '+b:'');
+  return 'https://www.google.com/travel/flights?q='+encodeURIComponent(q);
+}
+function skyscanner(from,to){
+  return 'https://www.skyscanner.com.vn/transport/flights/'+from.toLowerCase()+'/'+to.toLowerCase()+'/'+ymd(S.a)+'/'+(S.rt?ymd(S.b)+'/':'')+'?adultsv2='+S.ad;
+}
+
+const ROUTE_ADVICE = {
+  'qn-pq': {
+    title: 'Hướng dẫn di chuyển chi tiết: Quảng Ninh → Phú Quốc (Không có đường bay thẳng từ Vân Đồn)',
+    intro: 'Hiện tại sân bay Vân Đồn (VDO) chưa khai thác đường bay thẳng thường xuyên đi Phú Quốc (PQC). Bạn có 2 phương án tối ưu nhất để di chuyển:',
+    options: [
+      {
+        name: 'Phương án 1: Di chuyển qua Sân bay Cát Bi (Hải Phòng - HPH) [Gần & Tiết kiệm nhất]',
+        steps: [
+          'Chặng 1 (Đường bộ): Từ Hạ Long/Quảng Ninh đi xe Limousine hoặc taxi qua cao tốc Hạ Long – Hải Phòng thẳng tới sân bay Cát Bi (HPH).',
+          'Chặng 2 (Đường bay): Bay thẳng từ Cát Bi (HPH) → Phú Quốc (PQC) (Vietjet Air khai thác).',
+          'Lưu ý quan trọng: Chặng bay HPH – PQC thường KHÔNG bay hàng ngày (hay bay vào các ngày chẵn hoặc 3–4 chuyến/tuần tùy mùa). Bạn bắt buộc phải bấm link bên dưới để check lịch bay đúng ngày!'
+        ],
+        dist: '~50 – 75 km đường bộ (từ Hạ Long) + ~2h10p bay',
+        time: 'Tổng ~3,5 – 4 giờ (rất nhanh, không phải vòng qua Hà Nội)',
+        cost: 'Xe Limousine: ~150.000–250.000đ/người + Vé máy bay: ~1.500.000–3.200.000đ/chiều',
+        links: [
+          {label: 'Check vé HPH → PQC (Google Flights)', url: (a,b,rt)=>gflights('HPH','PQC',a,b)},
+          {label: 'Check lịch bay Vietjet Air', url: ()=>'https://www.vietjetair.com'}
+        ]
+      },
+      {
+        name: 'Phương án 2: Di chuyển qua Sân bay Nội Bài (Hà Nội - HAN) [Nhiều giờ bay nhất]',
+        steps: [
+          'Chặng 1 (Đường bộ): Từ Quảng Ninh đi xe Limousine cao tốc Hạ Long – Hà Nội thẳng lên sảnh sân bay Nội Bài (HAN).',
+          'Chặng 2 (Đường bay): Bay thẳng từ Nội Bài (HAN) → Phú Quốc (PQC) (Vietnam Airlines, Vietjet Air, Bamboo Airways khai thác nhiều khung giờ mỗi ngày).',
+          'Ưu điểm: Ngày nào cũng có nhiều chuyến từ sáng đến tối, dễ chọn giờ đẹp cho gia đình có trẻ nhỏ nếu Phương án 1 hết chuyến hoặc lệch ngày.'
+        ],
+        dist: '~160 – 180 km đường bộ + ~2h10p bay',
+        time: 'Tổng ~5,5 – 6,5 giờ (tính cả thời gian di chuyển đường bộ và làm thủ tục)',
+        cost: 'Xe Limousine: ~250.000–350.000đ/người + Vé máy bay: ~1.800.000–3.800.000đ/chiều',
+        links: [
+          {label: 'Check vé HAN → PQC (Google Flights)', url: (a,b,rt)=>gflights('HAN','PQC',a,b)},
+          {label: 'Check Vietnam Airlines', url: ()=>'https://www.vietnamairlines.com'}
+        ]
+      }
+    ],
+    compare: [
+      ['Tiêu chí', 'Phương án 1: Qua Cát Bi (Hải Phòng)', 'Phương án 2: Qua Nội Bài (Hà Nội)'],
+      ['Quãng đường bộ ra sân bay', '~50 – 75 km (45 – 60 phút đi cao tốc)', '~160 – 180 km (2,5 – 3 giờ đi cao tốc)'],
+      ['Tần suất chuyến bay', 'Ít chuyến (thường bay cách ngày / ngày chẵn)', 'Rất nhiều chuyến mỗi ngày (sáng – tối)'],
+      ['Tổng thời gian di chuyển', 'Nhanh (~3,5 – 4 giờ)', 'Lâu hơn (~5,5 – 6,5 giờ)'],
+      ['Chi phí tổng dự kiến', 'Thấp hơn (tiết kiệm ~200k–400k tiền xe & vé)', 'Nhỉnh hơn do quãng đường xe dài hơn']
+    ]
+  }
+};
+
+function buildSmartGuide(O, Dd){
+  const pairKey = S.o + '-' + Dd.key;
+  if(ROUTE_ADVICE[pairKey]){
+    const r = ROUTE_ADVICE[pairKey];
+    let h = `<div class="panel" style="margin-top:12px;border-color:var(--accent)">
+      <h3 style="font-size:18px;color:var(--accent)">${r.title}</h3>
+      <div>${r.intro}</div>
+      <div style="display:grid;gap:12px;margin-top:4px">`;
+    r.options.forEach(opt => {
+      h += `<div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:6px">
+        <b style="font-size:15.5px">${opt.name}</b>
+        <ul style="margin:0;padding-left:18px;font-size:14px;display:grid;gap:4px">
+          ${opt.steps.map(st => `<li>${st}</li>`).join('')}
+        </ul>
+        <dl class="meta" style="margin-top:4px">
+          <div><dt>Khoảng cách</dt><dd>${opt.dist}</dd></div>
+          <div><dt>Thời gian</dt><dd>${opt.time}</dd></div>
+          <div><dt>Giá dự kiến</dt><dd>${opt.cost}</dd></div>
+        </dl>
+        <div class="links" style="margin-top:4px">
+          ${opt.links.map(lk => `<a class="btn small ghost" href="${lk.url(S.a,S.b,S.rt)}" target="_blank" rel="noopener">${lk.label}</a>`).join('')}
+        </div>
+      </div>`;
+    });
+    h += `</div>`;
+    if(r.compare){
+      h += `<div style="overflow-x:auto;margin-top:6px">
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;text-align:left">
+          <thead>
+            <tr style="border-bottom:2px solid var(--line);background:var(--bg)">
+              ${r.compare[0].map(th => `<th style="padding:8px 10px;font-weight:600">${th}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${r.compare.slice(1).map(row => `<tr style="border-bottom:1px solid var(--line)">
+              <td style="padding:8px 10px;font-weight:600;color:var(--muted)">${row[0]}</td>
+              <td style="padding:8px 10px">${row[1]}</td>
+              <td style="padding:8px 10px">${row[2]}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    }
+    h += `</div>`;
+    return h;
+  }
+
+  /* Tự động tạo hướng dẫn 2 phương án cho các tỉnh xuất phát không có đường bay thẳng (ví dụ QN đi các tỉnh khác trừ HCM/Đà Nẵng) */
+  if(S.o === 'qn' && Dd.code && Dd.code !== 'SGN' && Dd.code !== 'DAD' && Dd.code !== 'VDO'){
+    return `<div class="panel" style="margin-top:12px;border-color:var(--accent)">
+      <h3 style="font-size:18px;color:var(--accent)">Hướng dẫn di chuyển tối ưu từ Quảng Ninh → ${esc(Dd.name)}</h3>
+      <div>Sân bay Vân Đồn (VDO) chủ yếu chỉ có đường bay thẳng đi TP.HCM (SGN). Để đến <b>${esc(Dd.name)} (${Dd.apt})</b>, bạn có 2 phương án kết hợp đường bộ + đường bay:</div>
+      <div style="display:grid;gap:10px">
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:5px">
+          <b>Phương án 1: Đi xe sang Sân bay Cát Bi (Hải Phòng - HPH) rồi bay</b>
+          <div style="font-size:14px">• <b>Chặng 1:</b> Xe Limousine/Taxi cao tốc Hạ Long – Hải Phòng (~50–75 km, mất ~45–60 phút, giá ~150.000–250.000đ).</div>
+          <div style="font-size:14px">• <b>Chặng 2:</b> Bay từ Cát Bi (HPH) → ${esc(Dd.apt)}. <i>Lưu ý: Các chặng từ Hải Phòng thường bay theo ngày chẵn/lẻ hoặc tần suất ít, cần check trực tiếp lịch bay.</i></div>
+          <div class="links"><a class="btn small ghost" href="${gflights('HPH',Dd.code,S.a,S.b)}" target="_blank" rel="noopener">Check vé HPH → ${Dd.code}</a></div>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:5px">
+          <b>Phương án 2: Đi xe lên Sân bay Nội Bài (Hà Nội - HAN) rồi bay</b>
+          <div style="font-size:14px">• <b>Chặng 1:</b> Xe Limousine cao tốc Quảng Ninh – Nội Bài (~160–180 km, mất ~2,5–3 giờ, giá ~250.000–350.000đ).</div>
+          <div style="font-size:14px">• <b>Chặng 2:</b> Bay từ Nội Bài (HAN) → ${esc(Dd.apt)}. Ưu điểm là có rất nhiều chuyến mỗi ngày, dễ chọn giờ đẹp.</div>
+          <div class="links"><a class="btn small ghost" href="${gflights('HAN',Dd.code,S.a,S.b)}" target="_blank" rel="noopener">Check vé HAN → ${Dd.code}</a></div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  /* Nếu điểm đến không có sân bay (như Sa Pa, Hội An, Ninh Bình, Hà Giang, Mộc Châu, Vũng Tàu...) */
+  if(Dd.drive){
+    return `<div class="panel" style="margin-top:12px;border-color:var(--accent)">
+      <h3 style="font-size:18px;color:var(--accent)">Hướng dẫn chặng nối tiếp đến ${esc(Dd.name)}</h3>
+      <div>${Dd.drive}</div>
+      <div style="font-size:14px;color:var(--muted)">• <b>Gợi ý:</b> Bạn nên đặt trước xe Limousine đưa đón tận sảnh sân bay hoặc thuê xe riêng nếu đi cùng gia đình và trẻ nhỏ.</div>
+    </div>`;
+  }
+  return '';
+}
+
+const LOCAL_BUS_INFO = {
+  'qn-hp': [
+    {name: 'Sơn Hải Limousine', phone: '1900 299951', desc: 'Chạy liên tục 1h/chuyến Quảng Ninh ⇄ Hải Phòng'},
+    {name: 'Duy Khánh Limousine', phone: '1900 888684', desc: 'Xe VIP đưa đón tận nơi QN ⇄ Hải Phòng'}
+  ],
+  'hp-qn': [
+    {name: 'Sơn Hải Limousine', phone: '1900 299951', desc: 'Chạy liên tục 1h/chuyến Hải Phòng ⇄ Quảng Ninh'},
+    {name: 'Duy Khánh Limousine', phone: '1900 888684', desc: 'Xe VIP đưa đón tận nơi Hải Phòng ⇄ QN'}
+  ],
+  'qn-sp': [
+    {name: 'Nhà xe Cường Lan', phone: '02033662662', desc: 'Giường nằm / Cabin VIP chạy thẳng QN ⇄ Sa Pa'},
+    {name: 'Nhà xe Phúc Xuyên', phone: '1900 6799', desc: 'Giường nằm chất lượng cao tuyến QN ⇄ Sa Pa'}
+  ],
+  'qn-hn': [
+    {name: 'Phúc Xuyên Limousine', phone: '1900 6799', desc: 'Limousine cao tốc đón tận nơi QN ⇄ Hà Nội / Nội Bài'},
+    {name: 'Hạ Long Travel', phone: '02033828288', desc: 'Xe VIP tuyến Hạ Long ⇄ Hà Nội / Nội Bài'}
+  ],
+  'hn-qn': [
+    {name: 'Phúc Xuyên Limousine', phone: '1900 6799', desc: 'Limousine cao tốc đón tận nơi Hà Nội / Nội Bài ⇄ QN'},
+    {name: 'Hạ Long Travel', phone: '02033828288', desc: 'Xe VIP tuyến Hà Nội ⇄ Hạ Long'}
+  ],
+  'hn-sp': [
+    {name: 'Sao Việt', phone: '1900 6746', desc: 'Xe Cabin VIP / Giường nằm chạy liên tục Hà Nội ⇄ Sa Pa'},
+    {name: 'Inter Bus Lines', phone: '1900 1137', desc: 'Xe Cabin đôi / Giường nằm chuyên tuyến Sa Pa'}
+  ],
+  'hn-nb': [
+    {name: 'Tràng An Limousine', phone: '1900 0336', desc: 'Limousine đón tận nơi Hà Nội ⇄ Ninh Bình'},
+    {name: 'Khánh An Limousine', phone: '1900 1035', desc: 'Xe VIP 9 chỗ chạy cao tốc Hà Nội ⇄ Ninh Bình'}
+  ],
+  'hn-hg': [
+    {name: 'Bằng Phấn', phone: '1900 9389', desc: 'Xe Cabin cung điện / Giường nằm Hà Nội ⇄ Hà Giang'},
+    {name: 'Quang Nghị', phone: '1900 8185', desc: 'Giường nằm / Limousine chuyên tuyến Hà Giang'}
+  ],
+  'hn-mc': [
+    {name: 'Xuân Tráng Limousine', phone: '0981 559 551', desc: 'Limousine chuyên tuyến Hà Nội ⇄ Mộc Châu'},
+    {name: 'Bắc Sơn', phone: '0915 162 299', desc: 'Giường nằm chất lượng cao Hà Nội ⇄ Sơn La / Mộc Châu'}
+  ],
+  'hn-cb': [
+    {name: 'Thanh Ly', phone: '0916 121 888', desc: 'Giường nằm / Cabin Hà Nội ⇄ Cao Bằng'},
+    {name: 'Vĩnh Dung', phone: '0976 232 118', desc: 'Xe giường nằm chuyên tuyến Cao Bằng'}
+  ],
+  'hue-dn': [
+    {name: 'Hùng Đạt Limousine', phone: '0935 000 066', desc: 'Xe Limousine đón trả tận nơi Huế ⇄ Đà Nẵng'},
+    {name: 'HAV Limousine', phone: '1900 6763', desc: 'Xe VIP chạy liên tục Huế ⇄ Sân bay Đà Nẵng'}
+  ],
+  'dn-hue': [
+    {name: 'Hùng Đạt Limousine', phone: '0935 000 066', desc: 'Xe Limousine đón trả tận nơi Đà Nẵng ⇄ Huế'},
+    {name: 'HAV Limousine', phone: '1900 6763', desc: 'Xe VIP chạy liên tục Sân bay Đà Nẵng ⇄ Huế'}
+  ],
+  'dn-ha': [
+    {name: 'Hội An Express', phone: '0236 399 1999', desc: 'Xe Shuttle / Limousine Đà Nẵng ⇄ Hội An'}
+  ],
+  'nt-dl': [
+    {name: 'Phương Trang (FUTA)', phone: '1900 6067', desc: 'Xe ghế ngả / Giường nằm Nha Trang ⇄ Đà Lạt'},
+    {name: 'Khanh Phong', phone: '0258 382 3999', desc: 'Limousine VIP chuyên tuyến Nha Trang ⇄ Đà Lạt'}
+  ],
+  'dl-nt': [
+    {name: 'Phương Trang (FUTA)', phone: '1900 6067', desc: 'Xe ghế ngả / Giường nằm Đà Lạt ⇄ Nha Trang'},
+    {name: 'Khanh Phong', phone: '0258 382 3999', desc: 'Limousine VIP chuyên tuyến Đà Lạt ⇄ Nha Trang'}
+  ],
+  'hcm-dl': [
+    {name: 'Phương Trang (FUTA)', phone: '1900 6067', desc: 'Giường nằm chạy 24/24 Sài Gòn ⇄ Đà Lạt'},
+    {name: 'Thành Bưởi', phone: '1900 6079', desc: 'Xe phòng nằm / Limousine Sài Gòn ⇄ Đà Lạt'},
+    {name: 'Phong Phú Limousine', phone: '1900 9222', desc: 'Limousine phòng đôi cao cấp đi Đà Lạt'}
+  ],
+  'hcm-vt': [
+    {name: 'Hoa Mai Limousine', phone: '0889 200 200', desc: 'Limousine chạy liên tục 15p/chuyến Sài Gòn ⇄ Vũng Tàu'},
+    {name: 'Toàn Thắng Limousine', phone: '1900 633 971', desc: 'Đón trả tận nơi sân bay TSN / Q1 ⇄ Vũng Tàu'}
+  ],
+  'hcm-bt': [
+    {name: 'Phương Trang (FUTA)', phone: '1900 6067', desc: 'Giường nằm cao tốc Sài Gòn ⇄ Mũi Né / Phan Thiết'},
+    {name: 'Hạnh Cafe', phone: '028 3920 5679', desc: 'Limousine / Giường nằm chuyên tuyến Mũi Né'}
+  ],
+  'hcm-ct': [
+    {name: 'Phương Trang (FUTA)', phone: '1900 6067', desc: 'Giường nằm chạy liên tục Sài Gòn ⇄ Cần Thơ'},
+    {name: 'Vũ Linh Limousine', phone: '1900 8181', desc: 'Limousine VIP Sài Gòn ⇄ Cần Thơ'}
+  ]
+};
+
+function getBusBoxHTML(O, Dd){
+  const pairKey = S.o + '-' + Dd.key;
+  const buses = LOCAL_BUS_INFO[pairKey];
+  if(!buses || !buses.length) return '';
+  return `<div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:6px">
+    <b style="font-size:14.5px;color:var(--accent)">Hãng xe khách / Limousine uy tín tuyến ${esc(O.name)} → ${esc(Dd.name)}:</b>
+    <div style="display:grid;gap:5px">
+      ${buses.map(b => `<div style="font-size:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;padding-top:4px;border-top:1px dashed var(--line)">
+        <span>• <b>${esc(b.name)}</b> <span class="note">(${esc(b.desc)})</span></span>
+        <a href="tel:${b.phone.replace(/\s+/g,'')}" class="btn small ghost" style="padding:3px 9px">📞 ${esc(b.phone)}</a>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function optimalHTML(O, Dd){
+  const smartGuide = buildSmartGuide(O, Dd);
+  const busBox = getBusBoxHTML(O, Dd);
+  const route = `${esc(O.name)} → ${esc(Dd.name)}`;
+
+  if(smartGuide){
+    const cleanSmart = smartGuide.replace('style="margin-top:12px;border-color:var(--accent)"', 'style="border-color:var(--accent)"');
+    return cleanSmart + (busBox ? `<div class="panel" style="margin-top:12px">${busBox}</div>` : '');
+  }
+
+  const hasFlight = !Dd.custom && O.code && Dd.code && O.code !== Dd.code;
+  let h = `<div class="panel" style="border-color:var(--accent)">
+    <h3 style="font-size:18px;color:var(--accent)">Gợi ý lộ trình tối ưu: ${route}</h3>
+    <div>Tùy vào thời gian và ngân sách cho <b>${S.ad+S.kids.length} người</b>, bạn có thể chọn phương án phù hợp nhất dưới đây:</div>
+    <div style="display:grid;gap:10px">`;
+
+  if(hasFlight){
+    h += `<div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:6px">
+      <b>Phương án nhanh nhất: Bay thẳng / Nối chuyến (${O.code} → ${Dd.code})</b>
+      <div style="font-size:14px">Phù hợp nếu đi cùng gia đình hoặc muốn tiết kiệm thời gian di chuyển. Bấm để xem giá vé cập nhật theo ngày:</div>
+      <div class="links">
+        <a class="btn small" href="${gflights(O.code,Dd.code,S.a,S.b)}" target="_blank" rel="noopener">Check vé Google Flights (${O.code} → ${Dd.code})</a>
+        <a class="btn small ghost" href="${skyscanner(O.code,Dd.code)}" target="_blank" rel="noopener">Check Skyscanner</a>
+      </div>
+    </div>`;
+  }
+
+  h += `<div style="background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:6px">
+    <b>Phương án tiết kiệm / Linh hoạt: Xe Limousine, Xe khách hoặc Tàu hỏa</b>
+    <div style="font-size:14px">Phù hợp với quãng đường ngắn (dưới 350km) hoặc đi đêm để tiết kiệm chi phí lưu trú.</div>
+    <div class="links">
+      <a class="btn small ghost" href="https://vexere.com" target="_blank" rel="noopener">Check vé xe trên VeXeRe</a>
+      ${(O.rail && Dd.rail) ? `<a class="btn small ghost" href="https://dsvn.vn" target="_blank" rel="noopener">Check vé tàu (${O.rail} → ${Dd.rail})</a>` : ''}
+      <a class="btn small ghost" href="https://www.google.com/maps/dir/${encodeURIComponent(O.name)}/${encodeURIComponent(Dd.name)}" target="_blank" rel="noopener">Xem bản đồ quãng đường</a>
+    </div>
+  </div>`;
+
+  if(busBox) h += busBox;
+  h += `</div></div>`;
+  return h;
+}
+
+function flyHTML(O,Dd){
+  const route=`${esc(O.name)} → ${esc(Dd.name)}`;
+  if(Dd.custom){
+    return `<div class="panel"><b>Vé máy bay · ${route} · ${dm(S.a)}${S.rt?' → '+dm(S.b):''}</b>
+      <div>Giá vé máy bay cập nhật liên tục theo giờ và không có API miễn phí cố định. Bạn vui lòng bấm vào các link dưới đây để <b>check trực tiếp</b> giá vé và lịch bay đúng ngày:</div>
+      <div class="links">
+        <a class="btn small" href="${S.x?gflights(O.code,S.x,S.a,S.b):'#'}" target="_blank" rel="noopener">Check trực tiếp Google Flights</a>
+        <a class="btn small ghost" href="https://www.vietnamairlines.com" target="_blank" rel="noopener">Check trực tiếp Vietnam Airlines</a>
+        <a class="btn small ghost" href="https://www.vietjetair.com" target="_blank" rel="noopener">Check trực tiếp Vietjet Air</a>
+      </div></div>`;
+  }
+  if(O.code===Dd.code){
+    return `<div class="panel"><b>Vé máy bay · ${route}</b><div>Không cần đi máy bay cho chặng này (dùng chung vùng sân bay ${O.code}).</div>${Dd.drive?`<div class="note">${Dd.drive}</div>`:''}</div>`;
+  }
+  return `<div class="panel"><b>Vé máy bay · ${route} · ${dm(S.a)}${S.rt?' → '+dm(S.b):''}</b>
+    <div>Do vé máy bay không có API lấy giá tự động miễn phí, bạn vui lòng bấm vào các đường dẫn dưới đây để <b>check trực tiếp</b> giá vé, giờ bay thẳng hoặc nối chuyến cho <b>${S.ad+S.kids.length} người</b>:</div>
+    ${Dd.drive?`<div class="note">${Dd.drive}</div>`:''}
+    <div class="links">
+      <a class="btn small" href="${gflights(O.code,Dd.code,S.a,S.b)}" target="_blank" rel="noopener">Check trực tiếp Google Flights (${O.code} → ${Dd.code})</a>
+      <a class="btn small ghost" href="${skyscanner(O.code,Dd.code)}" target="_blank" rel="noopener">Check trực tiếp Skyscanner</a>
+      <a class="btn small ghost" href="https://www.vietnamairlines.com" target="_blank" rel="noopener">Check trực tiếp Vietnam Airlines</a>
+      <a class="btn small ghost" href="https://www.vietjetair.com" target="_blank" rel="noopener">Check trực tiếp Vietjet Air</a>
+      <a class="btn small ghost" href="https://www.bambooairways.com" target="_blank" rel="noopener">Check trực tiếp Bamboo Airways</a>
+    </div>
+  </div>`;
+}
+function trainHTML(O,Dd){
+  let t;
+  if(Dd.custom)t='Bạn xem lịch tàu và ga gần nhất trên trang bán vé chính thức của Đường sắt Việt Nam.';
+  else if(O.code===Dd.code&&Dd.key!=='sp')t='Hai nơi gần nhau, không cần đi tàu liên tỉnh.';
+  else if(Dd.key==='sp')t=O.rail==='Hà Nội'?'Tàu đêm đi từ ga Hà Nội đến ga Lào Cai, rồi đi xe lên Sa Pa. Cũng có xe giường nằm Hà Nội – Sa Pa.':'Sa Pa chưa có ga. Bạn ra Hà Nội, đi tàu đêm đến Lào Cai rồi đi xe lên Sa Pa.';
+  else if(!Dd.rail)t=Dd.key==='pq'?'Phú Quốc là đảo, không có tàu hỏa. Bạn đi máy bay hoặc đi tàu cao tốc từ Hà Tiên hoặc Rạch Giá.':`${Dd.name} không có ga tàu khách${Dd.near?'. Bạn đi tàu đến '+Dd.near:''}. Nên chọn máy bay hoặc xe khách.`;
+  else if(!O.rail)t=`${O.name} chưa có tàu khách thẳng${O.near?'. Bạn đến '+O.near+' rồi đi tàu Thống Nhất đến ga '+Dd.rail:''}.`;
+  else t=`Tàu Thống Nhất đi từ ga ${O.rail} đến ga ${Dd.rail}.`;
+  const extra=(S.o==='hn'&&Dd.key==='hue')||(S.o==='hue'&&Dd.key==='hn')?'<div class="note">Hà Nội – Huế mất khoảng 13–16 giờ, nên chọn tàu đêm để tiết kiệm ngày.</div>':'';
+  return `<div class="panel"><b>Tàu hỏa · ${dm(S.a)}${S.rt?' → '+dm(S.b):''}</b><div>${t}</div>${extra}
+    <div class="note">Giờ tàu, loại ghế hoặc giường và giá vé vui lòng check trực tiếp trên trang bán vé chính thức.</div>
+    <div class="links"><a class="btn small" href="https://dsvn.vn" target="_blank" rel="noopener">Check trực tiếp vé tàu (dsvn.vn)</a></div></div>`;
+}
+function roadHTML(O,Dd){
+  const route=`${esc(O.name)} → ${esc(Dd.name)}`;
+  const busBox = getBusBoxHTML(O, Dd);
+  return `<div class="panel"><b>Xe khách, Limousine & Grab · ${route} · ${dm(S.a)}${S.rt?' → '+dm(S.b):''}</b>
+    ${busBox}
+    <div>Các lựa chọn di chuyển đường bộ linh hoạt từ điểm xuất phát hoặc đi lại nội tỉnh:</div>
+    <div class="leg">
+      <div class="frow"><span class="air">Xe Limousine VIP</span><span class="tm">Đưa đón tận nơi (tuyến dưới 300km), ghế ngả massage êm ái</span><span class="pr">Từ 250.000đ - 450.000đ</span><a class="btn small ghost" href="https://vexere.com" target="_blank" rel="noopener">Check trực tiếp VeXeRe</a></div>
+      <div class="frow"><span class="air">Xe khách giường nằm</span><span class="tm">Chạy tuyến cố định Bắc - Nam, xe cabin đôi / giường đơn</span><span class="pr">Từ 200.000đ - 400.000đ</span><a class="btn small ghost" href="https://vexere.com" target="_blank" rel="noopener">Check lịch xe VeXeRe</a></div>
+      <div class="frow"><span class="air">Grab / Taxi / Xe hợp đồng</span><span class="tm">Di chuyển từ sân bay, ga tàu về khách sạn hoặc đi tham quan</span><span class="pr">Tính theo km / App</span><a class="btn small ghost" href="https://www.grab.com/vn/" target="_blank" rel="noopener">Mở Grab</a></div>
+    </div>
+    <div class="note">Giá vé xe khách/limousine mang tính tham khảo, bạn bấm vào link hoặc gọi trực tiếp tổng đài nhà xe ở trên để đặt chỗ.</div></div>`;
+}
+function drawMove(){
+  const O=ORIGINS[S.o],Dd=D();
+  $('move-lead').textContent=`Từ ${O.name} đến ${Dd.name} ngày ${dm(S.a)}${S.rt?' và về ngày '+dm(S.b):''}.`;
+  document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode===S.mode));
+  if(S.d!=='other'&&S.o===S.d){$('move-body').innerHTML=`<div class="panel"><b>Điểm xuất phát và điểm đến đang trùng nhau.</b><div>Chọn một điểm xuất phát khác ở trên.</div></div>`;return}
+  if(S.mode==='optimal') $('move-body').innerHTML=optimalHTML(O,Dd);
+  else if(S.mode==='fly') $('move-body').innerHTML=flyHTML(O,Dd);
+  else if(S.mode==='train') $('move-body').innerHTML=trainHTML(O,Dd);
+  else $('move-body').innerHTML=roadHTML(O,Dd);
+}
+
+/* ---- weather ---- */
+function drawWx(){
+  const days=dayList(),Dd=D(),m=parse(S.a).getMonth()+1;
+  const rainSvg='<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 40a10 10 0 0 1 1.5-19.9A14 14 0 0 1 46 22a9 9 0 0 1 1 18H18z"/><path d="M22 48l-3 8M32 48l-3 8M42 48l-3 8"/></svg>';
+  if(Dd.custom){
+    $('wx-body').innerHTML=`<div class="panel"><div class="note">Bạn xem dự báo thời tiết cho ${esc(Dd.name)} đúng ngày đi:</div><div class="links"><a class="btn small" href="https://www.google.com/search?q=${encodeURIComponent('thời tiết '+(S.x||'')+' '+dmShort(S.a))}" target="_blank" rel="noopener">Tìm thời tiết</a><a class="btn small ghost" href="https://nchmf.gov.vn" target="_blank" rel="noopener">Dự báo chính thức (NCHMF)</a></div></div>`;
+    return;
+  }
+  const sk=season();
+  const ws=(Dd.wstat&&Dd.wstat[sk])||{t:'25°C',p:'20% mưa, 80% nắng'};
+  const tip=sk==='r'?'Mang áo mưa/ô, ưu tiên điểm trong nhà':(sk==='c'?'Mang áo ấm, áo khoác gió':'Mang nón, kem chống nắng, nước uống');
+  let h=`<div class="panel"><div class="wx">${rainSvg}<div><div class="big">${esc(Dd.tmp[sk])}</div><div class="note">Tháng ${m} ở ${esc(Dd.name)} thuộc ${SEAS[sk]}. Chi tiết dự kiến từng ngày trong chuyến đi của bạn:</div></div></div>
+  <div class="days">`+days.map((d,idx)=>{
+    const baseT=parseInt(ws.t)||25;
+    const dayT=(baseT + (idx%2===0?0:1))+'°C';
+    return `<div class="day">
+      <b>${dm(d)}</b>
+      <div class="wcond">${ws.p}</div>
+      <div class="wstat">Nhiệt độ trung bình: <strong>${dayT}</strong></div>
+      <span class="note">${tip}</span>
+    </div>`;
+  }).join('')+`</div>`;
+  if(Dd.key==='hue'&&S.a<='2026-11-15'&&S.b>='2026-11-09'){
+    h+=`<div class="b-warn badge" style="white-space:normal;border-radius:10px;padding:10px 12px;font-weight:500">Tin báo: Huế có khả năng mưa lớn diện rộng và nguy cơ ngập lụt trong khoảng 9–12/11/2026, các hồ chứa đã điều tiết nước. Trước khi đi, xem lại dự báo mới nhất và tình hình đường sá.</div>`;
+  }
+  h+=`<div class="links"><a class="btn small" href="https://nchmf.gov.vn" target="_blank" rel="noopener">Check dự báo chính thức (NCHMF)</a>`;
+  if(Dd.key==='hue')h+=`<a class="btn small ghost" href="https://vietbao.vn/cac-ho-chua-o-hue-dong-loat-van-hanh-dieu-tiet-nuoc-615131.html" target="_blank" rel="noopener">Tin mưa lớn tại Huế</a>`;
+  h+=`</div></div>`;
+  $('wx-body').innerHTML=h;
+}
+
+/* ---- cards ---- */
+function seasonBadge(s){
+  const v=s[season()];
+  return v===2?`<span class="badge b-good">Rất hợp ${SEAS[season()].split(',')[0]}</span>`:(v===1?`<span class="badge b-warn">Tạm ổn</span>`:`<span class="badge b-bad">Nên tránh lúc này</span>`);
+}
+function kidBadge(minAge){
+  const y=youngest();
+  if(y===null)return '';
+  const ok=y>=minAge;
+  return `<span class="badge ${ok?'b-good':'b-warn'}">${ok?`Hợp bé ${y} tuổi`:`Bé ${y} tuổi còn nhỏ`}</span>`;
+}
+function addSelect(id){
+  const days=dayList();
+  const cur=S.sel[id];
+  let o=`<option value="">${cur!==undefined?'Đã thêm · ngày '+dmShort(days[Math.min(cur,days.length-1)]):'Thêm vào lịch'}</option>`;
+  days.forEach((d,i)=>{o+=`<option value="${i}"${cur===i?' selected':''}>Ngày ${dm(d)}</option>`});
+  if(cur!==undefined)o+=`<option value="x">Bỏ khỏi lịch</option>`;
+  return `<select data-add="${id}" aria-label="Thêm vào lịch">${o}</select>`;
+}
+function mapLink(q){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q+' '+D().sn)}
+function customPanel(){
+  const n=S.x;
+  if(!n)return `<div class="panel"><b>Vui lòng gõ tên tỉnh thành vào ô phía trên.</b><div class="note">Hệ thống sẽ tự động tạo lịch trình, thời tiết và gợi ý địa điểm cho bạn.</div></div>`;
+  return '';
+}
+function drawSee(){
+  const y=youngest(),Dd=D();
+  $('see-lead').textContent=Dd.custom?'Điểm đến tự nhập.':`Xếp theo ${SEAS[season()].split(',')[0]} (đi ngày ${dm(S.a)}). Thẻ nào hợp mùa nhất nằm trên cùng.`;
+  if(Dd.custom){$('see-f').innerHTML='';$('see-cards').innerHTML=customPanel();return}
+  
+  /* Cho phép bấm trực tiếp vào ô "Chỉ nơi hợp với bé" mọi lúc (nếu chưa nhập tuổi bé sẽ tự gợi ý nhập hoặc lọc theo bé dưới 6 tuổi) */
+  const kidLabelText = y!==null ? `Chỉ nơi hợp với bé (${y} tuổi)` : `Chỉ nơi hợp với bé (nhập tuổi bé ở trên để lọc chuẩn nhất)`;
+  $('see-f').innerHTML=Object.entries(TAGS).map(([k,v])=>`<button data-ptag="${k}" class="${S.ptag===k?'on':''}">${v}</button>`).join('')
+    +`<label for="kf"><input type="checkbox" id="kf" ${S.kf?'checked':''}> ${kidLabelText}</label>`;
+    
+  let list=Dd.places.filter(p=>S.ptag==='all'||p.t.includes(S.ptag));
+  if(S.kf){
+    const targetAge = y!==null ? y : 3;
+    list=list.filter(p=>p.kid<=targetAge);
+  }
+  list=list.map((p,i)=>({p,i})).sort((a,b)=>b.p.s[season()]-a.p.s[season()]||a.i-b.i).map(x=>x.p);
+  $('see-cards').innerHTML=list.length?list.map(p=>`<article class="card"><div class="top"><h3>${p.n}</h3></div>
+    <div class="badges">${seasonBadge(p.s)}<span class="badge b-mute">${p.io}</span>${kidBadge(p.kid)}</div>
+    <p>${p.d}</p>
+    <dl class="meta"><div><dt>Giờ</dt><dd>${p.hrs}</dd></div><div><dt>Vé</dt><dd>${p.cost}</dd></div>${(y!==null||S.kf)?`<div><dt>Bé</dt><dd>${p.kn}</dd></div>`:''}</dl>
+    <div class="foot"><a class="btn small ghost" href="${mapLink(p.n)}" target="_blank" rel="noopener">Bản đồ</a>${addSelect(p.id)}</div></article>`).join(''):`<p class="empty">Không có địa điểm nào khớp bộ lọc.</p>`;
+}
+function drawEat(){
+  const Dd=D();
+  $('eat-lead').textContent=Dd.custom?'':`Món đặc sản ${Dd.name}, xếp theo mùa và theo độ tuổi của bé. Giá là ước tính theo suất.`;
+  if(Dd.custom){$('eat-f').innerHTML='';$('eat-cards').innerHTML='';return}
+  $('eat-f').innerHTML=['all','sang','trua','toi','van'].map(k=>`<button data-meal="${k}" class="${S.meal===k?'on':''}">${k==='all'?'Tất cả':MEALS[k]}</button>`).join('');
+  let list=Dd.foods.filter(f=>S.meal==='all'||f.m.includes(S.meal));
+  list=list.map((p,i)=>({p,i})).sort((a,b)=>b.p.s[season()]-a.p.s[season()]||a.i-b.i).map(x=>x.p);
+  $('eat-cards').innerHTML=list.length?list.map(f=>`<article class="card"><div class="top"><h3>${f.n}</h3></div>
+    <div class="badges">${seasonBadge(f.s)}<span class="badge b-mute">${f.m.map(k=>MEALS[k]).join(' · ')}</span>${f.spicy?'<span class="badge b-warn">Có cay</span>':'<span class="badge b-good">Không cay</span>'}${kidBadge(f.kid)}</div>
+    <p>${f.d}</p>
+    <dl class="meta"><div><dt>Giá</dt><dd>${f.cost}</dd></div></dl>
+    <div class="foot"><a class="btn small ghost" href="${mapLink(f.q)}" target="_blank" rel="noopener">Tìm quán</a>${addSelect(f.id)}</div></article>`).join(''):`<p class="empty">Không có món nào cho bữa này.</p>`;
+}
+
+/* ---- hotel ---- */
+function drawHotel(){
+  const Dd=D();
+  const destQuery = Dd.custom ? (S.x||'Việt Nam') : Dd.name;
+  $('hotel-lead').textContent=`Lựa chọn nơi lưu trú (Khách sạn, Homestay, Vinhomes, Nhà nghỉ) tại ${destQuery} kèm khoảng cách tới các điểm du lịch & ăn uống.`;
+  
+  /* Bản đồ trực quan nhúng trực tiếp */
+  const mapEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent('khách sạn homestay ' + destQuery)}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+  $('hotel-map-wrap').innerHTML = `<iframe class="mapframe" src="${mapEmbedUrl}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Bản đồ chỗ ở tại ${esc(destQuery)}"></iframe>`;
+
+  if(Dd.custom){
+    $('hotel-f').innerHTML='';
+    const q=s=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s+' '+S.x);
+    $('hotel-cards').innerHTML=`<div class="panel"><b>Tìm khách sạn & chỗ ở tại ${esc(S.x||'điểm đến')}</b>
+      <div class="links"><a class="btn small" href="${q('khách sạn homestay căn hộ')}" target="_blank" rel="noopener">Mở Google Maps tìm khách sạn / homestay</a></div></div>`;
+    return;
+  }
+  $('hotel-f').innerHTML=Object.entries(HOTEL_TYPES).map(([k,v])=>`<button data-htag="${k}" class="${S.htag===k?'on':''}">${v}</button>`).join('');
+  let list=(Dd.hotels||[]).filter(h=>S.htag==='all'||h.type===S.htag);
+  $('hotel-cards').innerHTML=list.length?list.map(h=>`<article class="card"><div class="top"><h3>${h.n}</h3><span class="badge b-mute">${HOTEL_TYPES[h.type]}</span></div>
+    <p>${h.d}</p>
+    <dl class="meta">
+      <div><dt>Giá phòng</dt><dd>${h.price}</dd></div>
+      <div><dt>Gần điểm</dt><dd>${h.near}</dd></div>
+    </dl>
+    <div class="foot"><a class="btn small ghost" href="${mapLink(h.map)}" target="_blank" rel="noopener">Xem vị trí bản đồ</a>${addSelect(h.id)}</div></article>`).join(''):`<p class="empty">Không có chỗ ở nào khớp bộ lọc.</p>`;
+}
+
+/* ---- plan ---- */
+function drawPlan(){
+  const days=dayList(),O=ORIGINS[S.o],Dd=D();
+  const all=dItems();
+  $('plan').innerHTML=days.map((d,i)=>{
+    const items=Object.entries(S.sel).filter(([id,v])=>Math.min(v,days.length-1)===i).map(([id])=>all.find(x=>x.id===id)).filter(Boolean);
+    let h=`<div class="pcol"><h3>${dm(d)}</h3>`;
+    if(i===0)h+=`<div class="pitem fixed">Di chuyển ${esc(O.name)} → ${esc(Dd.name)}</div>`;
+    h+=items.length?items.map(x=>`<div class="pitem"><span>${x.n}</span><button data-rm="${x.id}" type="button" aria-label="Bỏ ${esc(x.n)}">Bỏ</button></div>`).join(''):`<div class="empty">Chưa có mục nào.</div>`;
+    if(i===days.length-1&&S.rt&&days.length>1)h+=`<div class="pitem fixed">Di chuyển ${esc(Dd.name)} → ${esc(O.name)}</div>`;
+    return h+`</div>`;
+  }).join('');
+}
+
+function drawAll(){
+  $('destname').textContent=D().name;
+  document.title='Check in du lịch Việt Nam';
+  drawKids();validate();drawMove();drawWx();drawSee();drawEat();drawHotel();drawPlan();syncHash();
+}
+
+/* ---- events ---- */
+function toast(t){const e=$('toast');e.textContent=t;e.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>{e.hidden=true},2200)}
+$('o').addEventListener('change',e=>{S.o=e.target.value;drawAll()});
+$('d').addEventListener('change',e=>{S.d=e.target.value;S.x='';$('dother').value='';S.sel={};S.ptag='all';S.meal='all';S.htag='all';S.kf=false;drawAll()});
+$('dother').addEventListener('input',e=>{
+  S.x=e.target.value.replace(/[<>"&]/g,'').slice(0,40);
+  const q=S.x.trim().toLowerCase();
+  if(q){
+    const found=Object.entries(DEST).find(([k,v])=>v.name.toLowerCase()===q||v.sn.toLowerCase()===q);
+    if(found){S.d=found[0];$('d').value=found[0];}
+  }
+  S.sel={};drawAll();
+});
+$('a').addEventListener('change',e=>{if(ISO.test(e.target.value)){S.a=e.target.value;if(S.rt&&parse(S.b)<parse(S.a)){S.b=S.a;$('b').value=S.b}drawAll()}});
+$('b').addEventListener('change',e=>{if(ISO.test(e.target.value)){S.b=e.target.value;drawAll()}});
+$('rt').addEventListener('change',e=>{S.rt=e.target.checked;$('b').disabled=!S.rt;if(!S.rt)S.b=S.a;else if(parse(S.b)<parse(S.a)){S.b=S.a}$('b').value=S.b;drawAll()});
+$('ad').addEventListener('change',e=>{S.ad=Math.min(20,Math.max(1,parseInt(e.target.value)||1));e.target.value=S.ad;drawAll()});
+$('kadd').addEventListener('click',()=>{const v=parseInt($('kage').value);if(v>=0&&v<=17&&S.kids.length<8){S.kids.push(v);$('kage').value='';drawAll()}});
+$('kage').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('kadd').click()}});
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.rk!==undefined){S.kids.splice(+t.dataset.rk,1);drawAll()}
+  else if(t.dataset.mode){S.mode=t.dataset.mode;drawMove()}
+  else if(t.dataset.ptag){S.ptag=t.dataset.ptag;drawSee()}
+  else if(t.dataset.meal){S.meal=t.dataset.meal;drawEat()}
+  else if(t.dataset.htag){S.htag=t.dataset.htag;drawHotel()}
+  else if(t.dataset.rm){delete S.sel[t.dataset.rm];drawAll()}
+  else if(t.dataset.go){const el=$(t.dataset.go);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b===t))}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset&&t.dataset.add){const v=t.value;if(v==='x')delete S.sel[t.dataset.add];else if(v!=='')S.sel[t.dataset.add]=+v;drawAll();if(v!==''&&v!=='x')toast('Đã thêm vào lịch trình')}
+  else if(t.id==='kf'){
+    S.kf=t.checked;
+    if(S.kf && S.kids.length===0){
+      toast('Đang lọc theo tiêu chuẩn bé nhỏ (≤ 3 tuổi). Bạn có thể nhập tuổi bé ở đầu trang.');
+    }
+    drawSee();
+  }
+});
+$('copylink').addEventListener('click',()=>{
+  const el=$('sharelink');el.select();
+  const done=()=>toast('Đã sao chép link');
+  try{navigator.clipboard.writeText(el.value).then(done,()=>{el.select();toast('Hãy nhấn Ctrl+C để sao chép')})}catch(e){toast('Hãy nhấn Ctrl+C để sao chép')}
+});
+$('openpaste').addEventListener('click',()=>{
+  const m=/t-([a-z2-7]{10,})/.exec($('paste').value.trim())||/^([a-z2-7]{10,}$)/.exec($('paste').value.trim());
+  if(!m){toast('Link hoặc mã chưa đúng');return}
+  try{apply(m[1]);fillForm();drawAll();toast('Đã mở lịch trình')}catch(e){toast('Link hoặc mã chưa đúng')}
+});
+window.addEventListener('hashchange',()=>{if(fromHash()){fillForm();drawAll()}});
+
+/* ---- boot ---- */
+fromHash();
+fillForm();
+drawAll();
+</script>
+</body>
+</html>
