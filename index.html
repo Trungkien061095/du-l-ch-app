@@ -175,9 +175,9 @@ section>p.lead{margin:6px 0 18px;color:var(--muted);max-width:68ch}
   <nav class="tabs" id="tabs" aria-label="Các mục">
     <button data-go="s-move" class="on">Di chuyển</button>
     <button data-go="s-wx">Thời tiết</button>
-    <button data-go="s-see">Du lịch</button>
-    <button data-go="s-eat">Ăn uống</button>
     <button data-go="s-hotel">Khách sạn</button>
+    <button data-go="s-eat">Ăn uống</button>
+    <button data-go="s-see">Du lịch</button>
     <button data-go="s-plan">Lịch trình</button>
     <button data-go="s-cost">Tổng chi phí</button>
   </nav>
@@ -200,11 +200,12 @@ section>p.lead{margin:6px 0 18px;color:var(--muted);max-width:68ch}
     <div id="wx-body"></div>
   </section>
 
-  <section id="s-see">
-    <h2>Địa điểm du lịch</h2>
-    <p class="lead" id="see-lead"></p>
-    <div class="filters" id="see-f"></div>
-    <div class="cards" id="see-cards"></div>
+  <section id="s-hotel">
+    <h2>Khách sạn & Chỗ ở</h2>
+    <p class="lead" id="hotel-lead"></p>
+    <div id="hotel-map-wrap"></div>
+    <div class="filters" id="hotel-f"></div>
+    <div class="cards" id="hotel-cards"></div>
   </section>
 
   <section id="s-eat">
@@ -214,12 +215,11 @@ section>p.lead{margin:6px 0 18px;color:var(--muted);max-width:68ch}
     <div class="cards" id="eat-cards"></div>
   </section>
 
-  <section id="s-hotel">
-    <h2>Khách sạn & Chỗ ở</h2>
-    <p class="lead" id="hotel-lead"></p>
-    <div id="hotel-map-wrap"></div>
-    <div class="filters" id="hotel-f"></div>
-    <div class="cards" id="hotel-cards"></div>
+  <section id="s-see">
+    <h2>Địa điểm du lịch</h2>
+    <p class="lead" id="see-lead"></p>
+    <div class="filters" id="see-f"></div>
+    <div class="cards" id="see-cards"></div>
   </section>
 
   <section id="s-plan">
@@ -628,13 +628,41 @@ Object.entries(EXTRA_PLACES).forEach(([reg, list]) => {
   });
 });
 
+/* ---- Cà phê và đồ uống: chuỗi quen thuộc + quán/đồ uống địa phương cho mọi điểm đến ---- */
+const CHAINS=[
+ ['hl','Highlands Coffee','Chuỗi cà phê Việt: cà phê phin, trà, đá xay và bánh ngọt, không gian điều hòa.','35.000–65.000đ','Highlands Coffee'],
+ ['sb','Starbucks','Cà phê espresso, frappuccino và đồ uống theo mùa, có wifi và chỗ ngồi thoải mái.','65.000–110.000đ','Starbucks'],
+ ['mx','Mixue','Chuỗi kem ốc quế và trà trái cây giá rẻ, bé thường rất thích.','10.000–40.000đ','Mixue'],
+ ['tch','The Coffee House','Cà phê, trà trái cây và bánh, không gian rộng để ngồi làm việc hoặc nghỉ chân.','40.000–65.000đ','The Coffee House'],
+ ['pl','Phúc Long','Trà và cà phê kiểu truyền thống, có trà sữa và đồ ăn nhẹ.','45.000–75.000đ','Phúc Long'],
+ ['cong','Cộng Cà Phê','Cà phê cốt dừa, sinh tố và trà, không gian hoài cổ nhiều góc chụp ảnh.','40.000–65.000đ','Cộng Cà Phê'],
+ ['tn','Trung Nguyên Legend','Cà phê Buôn Ma Thuột rang xay, nhiều loại cà phê phin và pha máy.','40.000–80.000đ','Trung Nguyên Legend']
+];
+const LOCAL_DRINKS={
+ hue:[['salt','Cà phê muối','Cà phê pha kem muối béo mặn, món uống gắn với Huế.','25.000–45.000đ','cà phê muối',12]],
+ dl:[['soy','Sữa đậu nành nóng','Đồ uống ấm bụng buổi tối ở Đà Lạt, hay ăn kèm bánh tráng nướng.','10.000–25.000đ','sữa đậu nành nóng',3]],
+ sp:[['tea','Trà shan tuyết và trà atiso nóng','Trà vùng núi, uống nóng khi trời lạnh.','20.000–50.000đ','trà shan tuyết',6]]
+};
+function makeDrinks(pfx,key){
+  const out=[];
+  CHAINS.forEach(c=>{
+    const o=F([pfx+'-d-'+c[0],c[1],'nuoc','222',3,0,c[2]+' Bé uống nước trái cây, sữa hoặc kem, cà phê dành cho người lớn.',c[3],c[4]]);
+    o.chain=true;out.push(o);
+  });
+  out.push(F([pfx+'-d-cf','Cà phê phin và cà phê sữa đá (quán địa phương)','nuoc,sang','222',12,0,'Quán cà phê bình dân, ngồi ghế nhựa hoặc quán vườn, giá rẻ và đậm vị. Bé nên chọn nước khác.','20.000–45.000đ','quán cà phê']));
+  out.push(F([pfx+'-d-nm','Nước mía, nước dừa, trà đá','nuoc,van','222',2,0,'Đồ uống giải khát bên đường, mát và rẻ, hợp bé.','10.000–30.000đ','nước mía nước dừa']));
+  (LOCAL_DRINKS[key]||[]).forEach(l=>out.push(F([pfx+'-d-'+l[0],l[1],'nuoc','222',l[5],0,l[2],l[3],l[4]])));
+  return out;
+}
+Object.entries(DEST).forEach(([k,v])=>{v.foods=(v.foods||[]).concat(makeDrinks(k,k))});
+
 const REGIONS=['Miền Bắc','Miền Trung','Miền Nam'];
 const ORIGINS={};
 Object.entries(DEST).forEach(([k,v])=>{
   ORIGINS[k]={name:v.on||v.name,sn:v.sn,reg:v.reg,code:v.code,rail:v.rail,near:v.near};
 });
 
-const MEALS={sang:'Sáng',trua:'Trưa',toi:'Tối',van:'Ăn vặt'};
+const MEALS={sang:'Sáng',trua:'Trưa',toi:'Tối',van:'Ăn vặt',nuoc:'Cà phê, đồ uống'};
 const TAGS={all:'Tất cả',in:'Trong nhà',heritage:'Di tích',nature:'Thiên nhiên',photo:'Check-in',family:'Gia đình'};
 const HOTEL_TYPES={all:'Tất cả',hotel:'Khách sạn',homestay:'Homestay',vinhomes:'Vinhomes / Căn hộ',nhanghi:'Nhà nghỉ'};
 const SEAS={r:'mùa mưa',c:'mùa lạnh',d:'mùa khô, thời tiết dễ chịu'};
@@ -662,7 +690,7 @@ function D(){
       return Object.assign({key:found[0]}, found[1]);
     }
     const name = S.x.trim();
-    return {
+    const cust = {
       key:'custom', custom:false, name: name, sn: name, reg:'Việt Nam', code:'SGN', apt: name, rail: name,
       rain:[5,6,7,8,9,10], cold:[12,1,2],
       tmp:{r:'25–32°C, mưa rào nhẹ', c:'18–24°C, se lạnh', d:'25–34°C, nắng đẹp'},
@@ -682,6 +710,8 @@ function D(){
         H(['oth-h3', 'Nhà nghỉ bình dân ' + name, 'nhanghi', '250.000đ - 400.000đ/đêm', 'Nhà nghỉ sạch sẽ, giá tiết kiệm tại ' + name + '.', 'Nhà nghỉ ' + name, 'Khu vực trung tâm'])
       ]
     };
+    cust.foods=cust.foods.concat(makeDrinks('oth','custom'));
+    return cust;
   }
   return Object.assign({key:S.d}, DEST[S.d] || DEST.hue);
 }
@@ -1238,16 +1268,16 @@ function drawSee(){
 }
 function drawEat(){
   const Dd=D();
-  $('eat-lead').textContent=Dd.custom?'':`Món đặc sản ${Dd.name}, xếp theo mùa và theo độ tuổi của bé. Giá là ước tính theo suất.`;
+  $('eat-lead').textContent=Dd.custom?'':`Món đặc sản ${Dd.name}, xếp theo mùa và theo độ tuổi của bé, kèm quán cà phê và đồ uống (Highlands, Starbucks, Mixue...) ở nhóm "Cà phê, đồ uống". Giá là ước tính theo suất, không phải nơi nào cũng có đủ chi nhánh nên bấm "Tìm chi nhánh" để xem gần bạn.`;
   if(Dd.custom){$('eat-f').innerHTML='';$('eat-cards').innerHTML='';return}
-  $('eat-f').innerHTML=['all','sang','trua','toi','van'].map(k=>`<button data-meal="${k}" class="${S.meal===k?'on':''}">${k==='all'?'Tất cả':MEALS[k]}</button>`).join('');
+  $('eat-f').innerHTML=['all','sang','trua','toi','van','nuoc'].map(k=>`<button data-meal="${k}" class="${S.meal===k?'on':''}">${k==='all'?'Tất cả':MEALS[k]}</button>`).join('');
   let list=Dd.foods.filter(f=>S.meal==='all'||f.m.includes(S.meal));
   list=list.map((p,i)=>({p,i})).sort((a,b)=>b.p.s[season()]-a.p.s[season()]||a.i-b.i).map(x=>x.p);
   $('eat-cards').innerHTML=list.length?list.map(f=>`<article class="card"><div class="top"><h3>${f.n}</h3></div>
-    <div class="badges">${seasonBadge(f.s)}<span class="badge b-mute">${f.m.map(k=>MEALS[k]).join(' · ')}</span>${f.spicy?'<span class="badge b-warn">Có cay</span>':'<span class="badge b-good">Không cay</span>'}${kidBadge(f.kid)}</div>
+    <div class="badges">${seasonBadge(f.s)}<span class="badge b-mute">${f.m.map(k=>MEALS[k]).join(' · ')}</span>${f.m.includes('nuoc')?'':(f.spicy?'<span class="badge b-warn">Có cay</span>':'<span class="badge b-good">Không cay</span>')}${kidBadge(f.kid)}</div>
     <p>${f.d}</p>
     <dl class="meta"><div><dt>Giá</dt><dd>${f.cost}</dd></div></dl>
-    <div class="foot"><a class="btn small ghost" href="${mapLink(f.q)}" target="_blank" rel="noopener">Tìm quán</a>${addSelect(f.id)}</div></article>`).join(''):`<p class="empty">Không có món nào cho bữa này.</p>`;
+    <div class="foot"><a class="btn small ghost" href="${mapLink(f.q)}" target="_blank" rel="noopener">${f.chain?'Tìm chi nhánh':'Tìm quán'}</a>${addSelect(f.id)}</div></article>`).join(''):`<p class="empty">Không có món nào cho bữa này.</p>`;
 }
 
 /* ---- hotel ---- */
