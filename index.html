@@ -172,6 +172,8 @@ section>p.lead{margin:6px 0 18px;color:var(--muted);max-width:68ch}
     <div id="formerr" class="err" hidden></div>
   </div>
 
+    <div id="dest-summary-box" class="panel" style="margin-top:22px;border-color:var(--accent);background:var(--surface)"></div>
+
   <nav class="tabs" id="tabs" aria-label="Các mục">
     <button data-go="s-move" class="on">Di chuyển</button>
     <button data-go="s-wx">Thời tiết</button>
@@ -1441,7 +1443,51 @@ function drawPlan(){
   $('cost-summary').innerHTML=h;
 }
 
+
+function drawDestSummary(){
+  const Dd = D();
+  if(!Dd) return;
+  const m = parse(S.a).getMonth() + 1;
+  const sk = season();
+  const seasonName = SEAS[sk] || 'mùa đẹp';
+  
+  let bestMonths = 'Tháng 1 đến tháng 4 (mùa xuân, khô ráo, mát mẻ)';
+  if(Dd.key === 'dl') bestMonths = 'Tháng 11 đến tháng 4 năm sau (mùa khô, hoa nở đẹp)';
+  else if(Dd.key === 'sp') bestMonths = 'Tháng 9–10 (mùa lúa chín) hoặc tháng 3–5 (mùa hoa)';
+  else if(Dd.key === 'pq' || Dd.key === 'nt' || Dd.key === 'dn' || Dd.key === 'ha') bestMonths = 'Tháng 2 đến tháng 8 (mùa khô, biển êm, nhiều nắng)';
+  else if(Dd.key === 'hue') bestMonths = 'Tháng 1 đến tháng 4 (tránh mùa mưa bão từ tháng 9–12)';
+  
+  const weatherDesc = Dd.tmp ? Dd.tmp[sk] : 'Thời tiết ôn hòa, dễ chịu';
+  const topPlaces = (Dd.places || []).slice(0, 3).map(p => p.n).join(', ');
+  const topFoods = (Dd.foods || []).filter(f => !f.chain).slice(0, 3).map(f => f.n).join(', ');
+  
+  const html = `<div style="display:grid;gap:8px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <h3 style="font-size:18px;color:var(--accent)">Tổng quan nhanh về ${esc(Dd.name)} (Tháng ${m})</h3>
+      <span class="badge b-mute">${seasonName}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;font-size:14px;margin-top:4px">
+      <div style="background:var(--bg);padding:10px;border-radius:8px;border:1px solid var(--line)">
+        <b>🌤 Thời tiết tháng ${m}:</b> ${esc(weatherDesc)}.<br>
+        <span class="note">${sk === 'r' ? '⚠️ Mùa mưa: Ưu tiên điểm trong nhà, mang ô/áo mưa.' : (sk === 'c' ? '🧥 Mùa lạnh: Nhớ mang áo ấm, giữ nhiệt.' : '☀️ Thời tiết đẹp, thuận lợi đi chơi ngoài trời.')}</span>
+      </div>
+      <div style="background:var(--bg);padding:10px;border-radius:8px;border:1px solid var(--line)">
+        <b>📅 Thời điểm đẹp nhất:</b> ${bestMonths}.
+      </div>
+      <div style="background:var(--bg);padding:10px;border-radius:8px;border:1px solid var(--line)">
+        <b>📍 Gợi ý đi đâu & ăn gì:</b><br>
+        • <i>Điểm đến:</i> ${esc(topPlaces || 'Các danh thắng nổi bật')}<br>
+        • <i>Ẩm thực:</i> ${esc(topFoods || 'Các món đặc sản địa phương')}
+      </div>
+    </div>
+  </div>`;
+  
+  const box = $('dest-summary-box');
+  if(box) box.innerHTML = html;
+}
+
 function drawAll(){
+  drawDestSummary();
   $('destname').textContent=D().name;
   document.title='Check in du lịch Việt Nam';
   normStay();drawKids();validate();drawMove();drawWx();drawSee();drawEat();drawHotel();drawPlan();syncHash();
