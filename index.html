@@ -89,6 +89,8 @@ section>p.lead{margin:6px 0 18px;color:var(--muted);max-width:68ch}
 .filters button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .filters label{display:flex;gap:6px;align-items:center;font-size:13.5px;font-weight:600;margin-left:auto;cursor:pointer;user-select:none}
 .filters label input{width:auto;cursor:pointer}
+.search{display:block;width:100%;max-width:420px;margin:0 0 12px;padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px}
+.search:focus{outline:2px solid var(--accent);outline-offset:1px}
 .days{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:12px}
 .day{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg);min-width:0;display:grid;gap:4px}
 .day b{display:block;font-family:var(--f-display);font-size:17px;color:var(--accent)}
@@ -206,6 +208,7 @@ section>p.lead{margin:6px 0 18px;color:var(--muted);max-width:68ch}
     <h2>Khách sạn & Chỗ ở</h2>
     <p class="lead" id="hotel-lead"></p>
     <div id="hotel-map-wrap"></div>
+    <input class="search" id="q-hotel" type="search" placeholder="Tìm chỗ ở theo tên, khu vực, địa điểm gần..." aria-label="Tìm chỗ ở theo tên, khu vực, địa điểm gần..." autocomplete="off">
     <div class="filters" id="hotel-f"></div>
     <div class="cards" id="hotel-cards"></div>
   </section>
@@ -213,6 +216,7 @@ section>p.lead{margin:6px 0 18px;color:var(--muted);max-width:68ch}
   <section id="s-eat">
     <h2>Ăn uống</h2>
     <p class="lead" id="eat-lead"></p>
+    <input class="search" id="q-eat" type="search" placeholder="Tìm món ăn, quán, cà phê..." aria-label="Tìm món ăn, quán, cà phê..." autocomplete="off">
     <div class="filters" id="eat-f"></div>
     <div class="cards" id="eat-cards"></div>
   </section>
@@ -220,6 +224,7 @@ section>p.lead{margin:6px 0 18px;color:var(--muted);max-width:68ch}
   <section id="s-see">
     <h2>Địa điểm du lịch</h2>
     <p class="lead" id="see-lead"></p>
+    <input class="search" id="q-see" type="search" placeholder="Tìm địa điểm tham quan..." aria-label="Tìm địa điểm tham quan..." autocomplete="off">
     <div class="filters" id="see-f"></div>
     <div class="cards" id="see-cards"></div>
   </section>
@@ -670,6 +675,28 @@ const HOTEL_TYPES={all:'Tất cả',hotel:'Khách sạn',homestay:'Homestay',vin
 const SEAS={r:'mùa mưa',c:'mùa lạnh',d:'mùa khô, thời tiết dễ chịu'};
 const WD=['CN','T2','T3','T4','T5','T6','T7'];
 
+/* Bù đủ loại chỗ ở: mỗi điểm đến luôn có ít nhất 2 gợi ý cho từng loại (khách sạn, homestay, căn hộ/Vinhomes, nhà nghỉ).
+   Mục bù là gợi ý theo khu vực (giá ước tính), bấm "Xem vị trí bản đồ" để tìm chỗ thật trên Google Maps. */
+const HOTEL_FILL={
+  hotel:[['Khách sạn 3 sao trung tâm','800.000đ - 1.500.000đ/đêm','Khách sạn tiêu chuẩn, gần trung tâm và các điểm ăn uống.','khách sạn 3 sao'],['Khách sạn 4 sao','1.600.000đ - 3.000.000đ/đêm','Khách sạn tiện nghi hơn, thường có hồ bơi và buffet sáng.','khách sạn 4 sao']],
+  homestay:[['Homestay gần trung tâm','300.000đ - 650.000đ/đêm','Homestay nhỏ, ấm cúng, chủ nhà thường chỉ đường và gợi ý quán ăn.','homestay'],['Homestay nguyên căn cho gia đình','700.000đ - 1.500.000đ/đêm','Nguyên căn có bếp và phòng khách, hợp đi nhóm hoặc có trẻ nhỏ.','homestay nguyên căn']],
+  vinhomes:[['Căn hộ dịch vụ (Vinhomes nếu có)','900.000đ - 2.000.000đ/đêm','Căn hộ có bếp, máy giặt, hợp ở nhiều ngày. Vinhomes chỉ có ở một số thành phố lớn.','Vinhomes căn hộ dịch vụ'],['Căn hộ 2 phòng ngủ','1.500.000đ - 3.000.000đ/đêm','Căn hộ rộng cho gia đình 4 người trở lên.','căn hộ 2 phòng ngủ']],
+  nhanghi:[['Nhà nghỉ trung tâm','200.000đ - 350.000đ/đêm','Nhà nghỉ giá rẻ, nên xem ảnh và đánh giá trước khi đặt.','nhà nghỉ'],['Nhà nghỉ gần bến xe / ga','220.000đ - 400.000đ/đêm','Tiện đi lại nếu đến bằng xe khách hoặc tàu.','nhà nghỉ gần bến xe']]
+};
+Object.entries(DEST).forEach(([key,Dd])=>{
+  Dd.hotels=Dd.hotels||[];
+  Object.entries(HOTEL_FILL).forEach(([type,arr])=>{
+    let have=Dd.hotels.filter(h=>h.type===type).length,i=0;
+    while(have<2&&i<arr.length){
+      const f=arr[i++];
+      Dd.hotels.push(H([key+'-hx-'+type+'-'+i,f[0]+' '+Dd.sn,type,f[1],f[2]+' (gợi ý theo khu vực, giá ước tính)',f[3],'Khu trung tâm '+Dd.sn]));
+      have++;
+    }
+  });
+});
+const Q={hotel:'',eat:'',see:''};
+const norm=t=>String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');
+const qmatch=(q,...f)=>{const w=norm(q).split(/\s+/).filter(Boolean);if(!w.length)return true;const h=norm(f.join(' '));return w.every(x=>h.includes(x))};
 const S={o:'qn',ox:'',d:'hue',x:'',a:'2026-11-12',b:'2026-11-15',rt:true,ad:2,kids:[],sel:{},mode:'optimal',ptag:'all',meal:'all',htag:'all',kf:false,stay:{}};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1256,7 +1283,7 @@ function drawSee(){
   $('see-f').innerHTML=Object.entries(TAGS).map(([k,v])=>`<button data-ptag="${k}" class="${S.ptag===k?'on':''}">${v}</button>`).join('')
     +`<label for="kf"><input type="checkbox" id="kf" ${S.kf?'checked':''}> ${kidLabelText}</label>`;
     
-  let list=Dd.places.filter(p=>S.ptag==='all'||p.t.includes(S.ptag));
+  let list=Dd.places.filter(p=>(S.ptag==='all'||p.t.includes(S.ptag))&&qmatch(Q.see,p.n,p.d));
   if(S.kf){
     const targetAge = y!==null ? y : 3;
     list=list.filter(p=>p.kid<=targetAge);
@@ -1266,20 +1293,20 @@ function drawSee(){
     <div class="badges">${seasonBadge(p.s)}<span class="badge b-mute">${p.io}</span>${kidBadge(p.kid)}</div>
     <p>${p.d}</p>
     <dl class="meta"><div><dt>Giờ</dt><dd>${p.hrs}</dd></div><div><dt>Vé</dt><dd>${p.cost}</dd></div>${(y!==null||S.kf)?`<div><dt>Bé</dt><dd>${p.kn}</dd></div>`:''}</dl>
-    <div class="foot"><a class="btn small ghost" href="${mapLink(p.n)}" target="_blank" rel="noopener">Bản đồ</a>${addSelect(p.id)}</div></article>`).join(''):`<p class="empty">Không có địa điểm nào khớp bộ lọc.</p>`;
+    <div class="foot"><a class="btn small ghost" href="${mapLink(p.n)}" target="_blank" rel="noopener">Bản đồ</a>${addSelect(p.id)}</div></article>`).join(''):`<p class="empty">Không có địa điểm nào khớp bộ lọc hoặc từ khóa.</p>`;
 }
 function drawEat(){
   const Dd=D();
   $('eat-lead').textContent=Dd.custom?'':`Món đặc sản ${Dd.name}, xếp theo mùa và theo độ tuổi của bé, kèm quán cà phê và đồ uống (Highlands, Starbucks, Mixue...) ở nhóm "Cà phê, đồ uống". Giá là ước tính theo suất, không phải nơi nào cũng có đủ chi nhánh nên bấm "Tìm chi nhánh" để xem gần bạn.`;
   if(Dd.custom){$('eat-f').innerHTML='';$('eat-cards').innerHTML='';return}
   $('eat-f').innerHTML=['all','sang','trua','toi','van','nuoc'].map(k=>`<button data-meal="${k}" class="${S.meal===k?'on':''}">${k==='all'?'Tất cả':MEALS[k]}</button>`).join('');
-  let list=Dd.foods.filter(f=>S.meal==='all'||f.m.includes(S.meal));
+  let list=Dd.foods.filter(f=>(S.meal==='all'||f.m.includes(S.meal))&&qmatch(Q.eat,f.n,f.d,f.q));
   list=list.map((p,i)=>({p,i})).sort((a,b)=>b.p.s[season()]-a.p.s[season()]||a.i-b.i).map(x=>x.p);
   $('eat-cards').innerHTML=list.length?list.map(f=>`<article class="card"><div class="top"><h3>${f.n}</h3></div>
     <div class="badges">${seasonBadge(f.s)}<span class="badge b-mute">${f.m.map(k=>MEALS[k]).join(' · ')}</span>${f.m.includes('nuoc')?'':(f.spicy?'<span class="badge b-warn">Có cay</span>':'<span class="badge b-good">Không cay</span>')}${kidBadge(f.kid)}</div>
     <p>${f.d}</p>
     <dl class="meta"><div><dt>Giá</dt><dd>${f.cost}</dd></div></dl>
-    <div class="foot"><a class="btn small ghost" href="${mapLink(f.q)}" target="_blank" rel="noopener">${f.chain?'Tìm chi nhánh':'Tìm quán'}</a>${addSelect(f.id)}</div></article>`).join(''):`<p class="empty">Không có món nào cho bữa này.</p>`;
+    <div class="foot"><a class="btn small ghost" href="${mapLink(f.q)}" target="_blank" rel="noopener">${f.chain?'Tìm chi nhánh':'Tìm quán'}</a>${addSelect(f.id)}</div></article>`).join(''):`<p class="empty">Không có món nào khớp bữa này hoặc từ khóa.</p>`;
 }
 
 /* ---- hotel ---- */
@@ -1300,14 +1327,16 @@ function drawHotel(){
     return;
   }
   $('hotel-f').innerHTML=Object.entries(HOTEL_TYPES).map(([k,v])=>`<button data-htag="${k}" class="${S.htag===k?'on':''}">${v}</button>`).join('');
-  let list=(Dd.hotels||[]).filter(h=>S.htag==='all'||h.type===S.htag);
+  const qs={all:'khách sạn homestay nhà nghỉ',hotel:'khách sạn',homestay:'homestay',vinhomes:'Vinhomes căn hộ dịch vụ',nhanghi:'nhà nghỉ'};
+  let list=(Dd.hotels||[]).filter(h=>(S.htag==='all'||h.type===S.htag)&&qmatch(Q.hotel,h.n,h.d,h.near));
   $('hotel-cards').innerHTML=list.length?list.map(h=>`<article class="card"><div class="top"><h3>${h.n}</h3><span class="badge b-mute">${HOTEL_TYPES[h.type]}</span></div>
     <p>${h.d}</p>
     <dl class="meta">
       <div><dt>Giá phòng</dt><dd>${h.price}</dd></div>
       <div><dt>Gần điểm</dt><dd>${h.near}</dd></div>
     </dl>
-    <div class="foot"><a class="btn small ghost" href="${mapLink(h.map)}" target="_blank" rel="noopener">Xem vị trí bản đồ</a>${stayUI(h)}</div></article>`).join(''):`<p class="empty">Không có chỗ ở nào khớp bộ lọc.</p>`;
+    <div class="foot"><a class="btn small ghost" href="${mapLink(h.map)}" target="_blank" rel="noopener">Xem vị trí bản đồ</a>${stayUI(h)}</div></article>`).join(''):`<p class="empty">Không có chỗ ở nào khớp bộ lọc hoặc từ khóa.</p>`;
+  $('hotel-cards').insertAdjacentHTML('beforeend',`<div class="panel" style="grid-column:1/-1"><a class="btn small" href="${mapLink(qs[S.htag]||qs.all)}" target="_blank" rel="noopener">Tìm thêm ${HOTEL_TYPES[S.htag].toLowerCase()} tại ${esc(Dd.sn)} trên Google Maps</a></div>`);
 }
 
 /* ---- plan & costs ---- */
@@ -1487,6 +1516,7 @@ function drawDestSummary(){
 }
 
 function drawAll(){
+  Object.keys(Q).forEach(k=>{$('q-'+k).hidden=!!D().custom});
   drawDestSummary();
   $('destname').textContent=D().name;
   document.title='Check in du lịch Việt Nam';
@@ -1505,7 +1535,8 @@ $('oother').addEventListener('input',e=>{
   }
   drawAll();
 });
-$('d').addEventListener('change',e=>{S.d=e.target.value;S.x='';$('dother').value='';S.sel={};S.stay={};S.ptag='all';S.meal='all';S.htag='all';S.kf=false;drawAll()});
+[['hotel',drawHotel],['eat',drawEat],['see',drawSee]].forEach(([k,fn])=>$('q-'+k).addEventListener('input',e=>{Q[k]=e.target.value;fn()}));
+$('d').addEventListener('change',e=>{S.d=e.target.value;S.x='';$('dother').value='';S.sel={};S.stay={};S.ptag='all';S.meal='all';S.htag='all';S.kf=false;Object.keys(Q).forEach(k=>{Q[k]='';$('q-'+k).value=''});drawAll()});
 $('dother').addEventListener('input',e=>{
   S.x=e.target.value.replace(/[<>"&]/g,'').slice(0,40);
   const q=S.x.trim().toLowerCase();
