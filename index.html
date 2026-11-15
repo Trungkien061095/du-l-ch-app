@@ -208,7 +208,7 @@ section>p.lead{margin:6px 0 18px;color:var(--muted);max-width:68ch}
     <h2>Khách sạn & Chỗ ở</h2>
     <p class="lead" id="hotel-lead"></p>
     <div id="hotel-map-wrap"></div>
-    <input class="search" id="q-hotel" type="search" placeholder="Tìm chỗ ở theo tên, khu vực, địa điểm gần..." aria-label="Tìm chỗ ở theo tên, khu vực, địa điểm gần..." autocomplete="off">
+    <input class="search" id="q-hotel" type="search" placeholder="Tìm chỗ ở (gõ tên bất kỳ, bản đồ sẽ tìm theo)..." aria-label="Tìm chỗ ở theo tên, khu vực, địa điểm gần..." autocomplete="off">
     <div class="filters" id="hotel-f"></div>
     <div class="cards" id="hotel-cards"></div>
   </section>
@@ -216,6 +216,7 @@ section>p.lead{margin:6px 0 18px;color:var(--muted);max-width:68ch}
   <section id="s-eat">
     <h2>Ăn uống</h2>
     <p class="lead" id="eat-lead"></p>
+    <div id="eat-map-wrap"></div>
     <input class="search" id="q-eat" type="search" placeholder="Tìm món ăn, quán, cà phê..." aria-label="Tìm món ăn, quán, cà phê..." autocomplete="off">
     <div class="filters" id="eat-f"></div>
     <div class="cards" id="eat-cards"></div>
@@ -1293,10 +1294,14 @@ function drawSee(){
     <div class="badges">${seasonBadge(p.s)}<span class="badge b-mute">${p.io}</span>${kidBadge(p.kid)}</div>
     <p>${p.d}</p>
     <dl class="meta"><div><dt>Giờ</dt><dd>${p.hrs}</dd></div><div><dt>Vé</dt><dd>${p.cost}</dd></div>${(y!==null||S.kf)?`<div><dt>Bé</dt><dd>${p.kn}</dd></div>`:''}</dl>
-    <div class="foot"><a class="btn small ghost" href="${mapLink(p.n)}" target="_blank" rel="noopener">Bản đồ</a>${addSelect(p.id)}</div></article>`).join(''):`<p class="empty">Không có địa điểm nào khớp bộ lọc hoặc từ khóa.</p>`;
+    <div class="foot"><a class="btn small ghost" href="${mapLink(p.n)}" target="_blank" rel="noopener">Bản đồ</a>${addSelect(p.id)}</div></article>`).join(''):`<div class="empty">Không có địa điểm nào trong danh sách khớp.${Q.see.trim()?` <a class="btn small" href="${mapLink(Q.see.trim())}" target="_blank" rel="noopener">Tìm "${esc(Q.see.trim())}" trên Google Maps</a>`:''}</div>`;
 }
 function drawEat(){
   const Dd=D();
+  const eatKw={all:'quán ăn đặc sản',sang:'quán ăn sáng',trua:'quán ăn trưa',toi:'quán ăn tối',van:'quán ăn vặt',nuoc:'quán cà phê'};
+  const eatDest=Dd.custom?(S.x||'Việt Nam'):Dd.name;
+  const eatUrl=`https://maps.google.com/maps?q=${encodeURIComponent((Q.eat.trim()||eatKw[S.meal]||eatKw.all)+' '+eatDest)}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
+  if(drawEat.lastMap!==eatUrl){drawEat.lastMap=eatUrl;clearTimeout(drawEat.t);drawEat.t=setTimeout(()=>{$('eat-map-wrap').innerHTML=`<iframe class="mapframe" src="${eatUrl}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Bản đồ quán ăn tại ${esc(eatDest)}"></iframe>`},$('eat-map-wrap').firstChild?500:0);}
   $('eat-lead').textContent=Dd.custom?'':`Món đặc sản ${Dd.name}, xếp theo mùa và theo độ tuổi của bé, kèm quán cà phê và đồ uống (Highlands, Starbucks, Mixue...) ở nhóm "Cà phê, đồ uống". Giá là ước tính theo suất, không phải nơi nào cũng có đủ chi nhánh nên bấm "Tìm chi nhánh" để xem gần bạn.`;
   if(Dd.custom){$('eat-f').innerHTML='';$('eat-cards').innerHTML='';return}
   $('eat-f').innerHTML=['all','sang','trua','toi','van','nuoc'].map(k=>`<button data-meal="${k}" class="${S.meal===k?'on':''}">${k==='all'?'Tất cả':MEALS[k]}</button>`).join('');
@@ -1306,7 +1311,7 @@ function drawEat(){
     <div class="badges">${seasonBadge(f.s)}<span class="badge b-mute">${f.m.map(k=>MEALS[k]).join(' · ')}</span>${f.m.includes('nuoc')?'':(f.spicy?'<span class="badge b-warn">Có cay</span>':'<span class="badge b-good">Không cay</span>')}${kidBadge(f.kid)}</div>
     <p>${f.d}</p>
     <dl class="meta"><div><dt>Giá</dt><dd>${f.cost}</dd></div></dl>
-    <div class="foot"><a class="btn small ghost" href="${mapLink(f.q)}" target="_blank" rel="noopener">${f.chain?'Tìm chi nhánh':'Tìm quán'}</a>${addSelect(f.id)}</div></article>`).join(''):`<p class="empty">Không có món nào khớp bữa này hoặc từ khóa.</p>`;
+    <div class="foot"><a class="btn small ghost" href="${mapLink(f.q)}" target="_blank" rel="noopener">${f.chain?'Tìm chi nhánh':'Tìm quán'}</a>${addSelect(f.id)}</div></article>`).join(''):`<div class="empty">Không có món nào trong danh sách khớp.${Q.eat.trim()?` <a class="btn small" href="${mapLink(Q.eat.trim())}" target="_blank" rel="noopener">Tìm "${esc(Q.eat.trim())}" trên Google Maps</a>`:''}</div>`;
 }
 
 /* ---- hotel ---- */
@@ -1316,8 +1321,9 @@ function drawHotel(){
   $('hotel-lead').textContent=`Lựa chọn nơi lưu trú (Khách sạn, Homestay, Vinhomes, Nhà nghỉ) tại ${destQuery} kèm khoảng cách tới các điểm du lịch & ăn uống.`;
   
   /* Bản đồ trực quan nhúng trực tiếp */
-  const mapEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent('khách sạn homestay ' + destQuery)}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
-  if(drawHotel.lastMap!==mapEmbedUrl){drawHotel.lastMap=mapEmbedUrl;$('hotel-map-wrap').innerHTML = `<iframe class="mapframe" src="${mapEmbedUrl}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Bản đồ chỗ ở tại ${esc(destQuery)}"></iframe>`;}
+  const mapKw={all:'khách sạn homestay',hotel:'khách sạn',homestay:'homestay',vinhomes:'Vinhomes căn hộ',nhanghi:'nhà nghỉ'};
+  const mapEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent((Q.hotel.trim()||mapKw[S.htag]||mapKw.all) + ' ' + destQuery)}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+  if(drawHotel.lastMap!==mapEmbedUrl){drawHotel.lastMap=mapEmbedUrl;clearTimeout(drawHotel.t);drawHotel.t=setTimeout(()=>{$('hotel-map-wrap').innerHTML = `<iframe class="mapframe" src="${mapEmbedUrl}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Bản đồ chỗ ở tại ${esc(destQuery)}"></iframe>`;},$('hotel-map-wrap').firstChild?500:0);}
 
   if(Dd.custom){
     $('hotel-f').innerHTML='';
@@ -1335,7 +1341,7 @@ function drawHotel(){
       <div><dt>Giá phòng</dt><dd>${h.price}</dd></div>
       <div><dt>Gần điểm</dt><dd>${h.near}</dd></div>
     </dl>
-    <div class="foot"><a class="btn small ghost" href="${mapLink(h.map)}" target="_blank" rel="noopener">Xem vị trí bản đồ</a>${stayUI(h)}</div></article>`).join(''):`<p class="empty">Không có chỗ ở nào khớp bộ lọc hoặc từ khóa.</p>`;
+    <div class="foot"><a class="btn small ghost" href="${mapLink(h.map)}" target="_blank" rel="noopener">Xem vị trí bản đồ</a>${stayUI(h)}</div></article>`).join(''):`<div class="empty">Không có chỗ ở nào trong danh sách gợi ý khớp ${Q.hotel.trim()?'"'+esc(Q.hotel.trim())+'"':'bộ lọc'}. Bản đồ phía trên đang tìm theo từ khóa này.${Q.hotel.trim()?` <a class="btn small" href="${mapLink(Q.hotel.trim())}" target="_blank" rel="noopener">Mở "${esc(Q.hotel.trim())}" trên Google Maps</a>`:''}</div>`;
   $('hotel-cards').insertAdjacentHTML('beforeend',`<div class="panel" style="grid-column:1/-1"><a class="btn small" href="${mapLink(qs[S.htag]||qs.all)}" target="_blank" rel="noopener">Tìm thêm ${HOTEL_TYPES[S.htag].toLowerCase()} tại ${esc(Dd.sn)} trên Google Maps</a></div>`);
 }
 
